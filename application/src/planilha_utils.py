@@ -9,10 +9,17 @@ load_dotenv()
 class PlanilhaUtils:
     def __init__(self):
         self.sheet_id = os.getenv("GOOGLE_SHEET_ID")
-        credentials_path = os.getenv("GOOGLE_CREDENTIALS_PATH")
+        credentials_path = os.getenv("GOOGLE_SHEET_CREDENTIALS_PATH")
 
-        scope = ["https://spreadsheets.google.com/feeds", "https://www.googleapis.com/auth/drive"]
-        creds = ServiceAccountCredentials.from_json_keyfile_name(credentials_path, scope)
+        scope = ["https://www.googleapis.com/auth/spreadsheets"]
+
+        # Resolve o caminho absoluto, baseado no local do main.py
+        main_dir = os.path.dirname(os.path.abspath(__file__))
+        full_path = os.path.abspath(os.path.join(main_dir, credentials_path))
+
+        print("Usando credenciais em:", full_path)
+
+        creds = ServiceAccountCredentials.from_json_keyfile_name(full_path, scope)
         self.client = gspread.authorize(creds)
 
     def carregar_dados_planilha_google(self):
@@ -20,7 +27,7 @@ class PlanilhaUtils:
         dados = worksheet.get_all_records()
         return dados
 
-    def salvar_excel_conciliado(self, conciliados: list, nao_conciliados: list, output_path="conciliados/Conciliados.xls"):
+    def salvar_excel_conciliado(self, conciliados: list, nao_conciliados: list, output_path="conciliado/Conciliados.xls"):
         dados_conciliados = pd.DataFrame(conciliados)
         dados_nao_conciliados = pd.DataFrame(nao_conciliados)
 
