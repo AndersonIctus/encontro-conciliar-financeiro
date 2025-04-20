@@ -79,8 +79,8 @@ def main():
     conciliador = Conciliador(planilha_utils, extratos)
     conciliador.conciliar_encontreiro()
 
-    conciliados = conciliador.get_conciliados()
-    nao_conciliados = conciliador.get_nao_conciliados()
+    conciliados = conciliador.get_conciliados_encontreiro()
+    nao_conciliados = conciliador.get_nao_conciliados_encontreiro()
     
     print("-------------------- CONCILIADOS")
     for con in conciliados:
