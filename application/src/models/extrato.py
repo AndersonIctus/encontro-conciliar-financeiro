@@ -5,6 +5,7 @@ class Extrato:
         self.nome = nome
         self.tipo = tipo
         self.valor = valor
+        self.num_conciliado = 0
 
     def __repr__(self):
         return (

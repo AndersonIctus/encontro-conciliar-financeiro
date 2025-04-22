@@ -79,16 +79,20 @@ def main():
     conciliador = Conciliador(planilha_utils, extratos)
     conciliador.conciliar_encontreiro()
 
-    conciliados = conciliador.get_conciliados_encontreiro()
-    nao_conciliados = conciliador.get_nao_conciliados_encontreiro()
+    # conciliados = conciliador.get_encontreiros_conciliados()
+    nao_conciliados = conciliador.get_encontreiros_nao_conciliados()
     
-    print("-------------------- CONCILIADOS")
-    for con in conciliados:
-        print(con)
+    # print("-------------------- CONCILIADOS")
+    # for con in conciliados:
+    #     print(con)
         
-    print("-------------------- NÃO - CONCILIADOS")
+    print("-------------------- ENCONTREIROS NÃO - CONCILIADOS")
+    idx = 0
     for n_con in nao_conciliados:
+        print('##  ' + str(idx))
         print(n_con)
+        print('\r\n')
+        idx = idx + 1
 
     # Path("conciliado").mkdir(exist_ok=True)
     # planilha_utils.salvar_excel_conciliado(conciliados, nao_conciliados)
