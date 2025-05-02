@@ -67,13 +67,16 @@ class Conciliador:
                         "VALOR PAGO": valor_pago,
                         "DETALHES DO PAGAMENTO": encontreiro.get("DETALHES DO PAGAMENTO", "")
                     })
-                    extrato.valor_conciliado = extrato.valor_conciliado - 90
+                    if(extrato.valor == 30):
+                        extrato.valor_a_conciliar = extrato.valor_a_conciliar - 30 # Pagamento de inscrição somente com a Blusa
+                    else:
+                        extrato.valor_a_conciliar = extrato.valor_a_conciliar - 90
 
                     # Remover dos não conciliados
                     if encontreiro in self.encontreiros_nao_conciliados:
                         self.encontreiros_nao_conciliados.remove(encontreiro)
                     if extrato in self.extratos_nao_conciliados:
-                        if extrato.valor_conciliado == 0:
+                        if extrato.valor_a_conciliar == 0:
                             self.extratos_conciliados.append(extrato)
                             self.extratos_nao_conciliados.remove(extrato)
                         else:
@@ -118,7 +121,7 @@ class Conciliador:
                 if data_pgto.year != data_extrato.year or data_pgto.month != data_extrato.month or data_pgto.day != data_extrato.day:
                     continue
                 
-                if self._nomes_sao_similares(extrato.nome, encontrista.pagador):
+                if self._nomes_sao_similares(extrato.nome, encontrista.pagador) and extrato.valor == encontrista.valor:
                     self.encontristas_conciliados.append({
                         "ID FICHA": encontrista.id,
                         "DT INSCRIÇÃO": encontrista.dt_lancamento,
@@ -126,14 +129,14 @@ class Conciliador:
                         "NOME COMPLETO": extrato.nome,
                         "VALOR PAGO": encontrista.valor
                     })
-                    extrato.valor_conciliado = extrato.valor_conciliado - encontrista.valor
+                    extrato.valor_a_conciliar = extrato.valor_a_conciliar - encontrista.valor
 
                     # Remover dos não conciliados
                     if encontrista in self.encontrista_nao_conciliado:
                         self.encontrista_nao_conciliado.remove(encontrista)
                         
                     if extrato in self.extratos_nao_conciliados:
-                        if extrato.valor_conciliado == 0:
+                        if extrato.valor_a_conciliar == 0:
                             self.extratos_conciliados.append(extrato)
                             self.extratos_nao_conciliados.remove(extrato)
                         else:
@@ -186,14 +189,14 @@ class Conciliador:
                         "NOME COMPLETO": extrato.nome,
                         "VALOR PAGO": despesa.valor
                     })
-                    extrato.valor_conciliado = extrato.valor_conciliado - despesa.valor
+                    extrato.valor_a_conciliar = extrato.valor_a_conciliar + despesa.valor
 
                     # Remover dos não conciliados
                     if despesa in self.despesas_nao_conciliados:
                         self.despesas_nao_conciliados.remove(despesa)
                         
                     if extrato in self.extratos_nao_conciliados:
-                        if extrato.valor_conciliado == 0:
+                        if extrato.valor_a_conciliar == 0:
                             self.extratos_conciliados.append(extrato)
                             self.extratos_nao_conciliados.remove(extrato)
                         else:

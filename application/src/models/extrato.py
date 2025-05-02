@@ -6,12 +6,12 @@ class Extrato:
         self.tipo = tipo
         self.valor = valor
         self.saldo = saldo
-        self.valor_conciliado = valor
+        self.valor_a_conciliar = valor
 
     def __repr__(self):
         return (
             f"Extrato(dt_lancamento ='{self.dt_lancamento}', nome='{self.nome}', "
-            f"tipo='{self.tipo}', valor={self.valor}, saldo={self.saldo})"
+            f"tipo='{self.tipo}', valor={self.valor}, saldo={self.saldo}, valor_a_conciliar={self.valor_a_conciliar})"
         )
 
     def __eq__(self, other):
