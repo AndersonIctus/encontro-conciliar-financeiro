@@ -3,47 +3,115 @@ from typing import List
 import unicodedata
 
 from application.src.models.extrato import Extrato
+from application.src.models.encontrista import Encontrista
 from application.src.planilha_utils import PlanilhaUtils
+from datetime import datetime
 
 
 class Conciliador:
-    def __init__(self, planilha_utils: PlanilhaUtils, extratos: List[Extrato]):
+    def __init__(self, planilha_utils: PlanilhaUtils, extratos: List[Extrato], encontristas: list[Encontrista]):
         self.planilha_utils = planilha_utils
-        self.extratos = extratos
         self.extratos_conciliados = []
+        self.extratos_nao_conciliados = extratos.copy()
         self.encontreiros_conciliados = []
         self.encontreiros_nao_conciliados = []
-        self.extratos_nao_conciliados = []
+        self.encontristas_conciliados = []
+        self.encontrista_nao_conciliado = encontristas.copy()
+        
 
     def conciliar_encontreiro(self):
-        linhas_planilha = self.planilha_utils.carregar_dados_planilha_google()
-        extratos_nao_conciliados = self.extratos.copy()
-        encontreiros_nao_conciliados = linhas_planilha.copy()
+        linhas_planilha_encontreiro = self.planilha_utils.carregar_dados_planilha_google()
+        self.encontreiros_nao_conciliados = linhas_planilha_encontreiro.copy()
 
-        for encontrista in linhas_planilha:
-            nome_pagador = str(encontrista.get("NOME DO PAGADOR:", "")).strip()
-            valor_pago = str(encontrista.get("VALOR PAGO:", "")).replace(",", ".").replace('R$', '').strip()
-            conciliado = False
+        for encontreiro in linhas_planilha_encontreiro:
+            nome_pagador = str(encontreiro.get("NOME DO PAGADOR:", "")).strip()
+            valor_pago = float(str(encontreiro.get("VALOR PAGO:", "")).replace(",", ".").replace('R$', '').strip())/100
+            data_inscricao = str(encontreiro.get("Carimbo de data/hora", "")).strip()
+            data_pgto = datetime.strptime(str(encontreiro.get("DATA DO PAGAMENTO", "")).strip(), '%d/%m/%Y')
             
-            for extrato in extratos_nao_conciliados:
-                if self._nomes_sao_similares(extrato.nome, nome_pagador) and float(extrato.valor) == float(valor_pago):
+            data_corte = datetime.strptime('11/04/2025', '%d/%m/%Y')
+            if data_pgto > data_corte:
+                self.encontreiros_nao_conciliados.remove(encontreiro)
+                continue
+            
+            conciliado = False
+            for extrato in self.extratos_nao_conciliados:
+                data_extrato = datetime.strptime(extrato.dt_lancamento, '%d/%m/%Y')
+                
+                if data_pgto.year != data_extrato.year or data_pgto.month != data_extrato.month or data_pgto.day != data_extrato.day:
+                    continue
+                
+                if self._nomes_sao_similares(extrato.nome, nome_pagador) and float(extrato.valor) == valor_pago:
                     self.encontreiros_conciliados.append({
-                        "NOME COMPLETO": encontrista.get("NOME COMPLETO", ""),
-                        "@ DO INSTAGRAM": encontrista.get("@ DO INSTAGRAM", ""),
+                        "DT INSCRIÇÃO": data_inscricao,
+                        "DT EXTRATO": extrato.dt_lancamento,
+                        "NOME COMPLETO": encontreiro.get("NOME COMPLETO", ""),
+                        "@ DO INSTAGRAM": encontreiro.get("@ DO INSTAGRAM", ""),
                         "NOME DO PAGADOR": nome_pagador,
                         "VALOR PAGO": valor_pago,
-                        "DETALHES DO PAGAMENTO": encontrista.get("DETALHES DO PAGAMENTO", "")
+                        "DETALHES DO PAGAMENTO": encontreiro.get("DETALHES DO PAGAMENTO", "")
                     })
                     self.extratos_conciliados.append(extrato)
-                    extrato.num_conciliado = extrato.num_conciliado + 1
+                    extrato.valor_conciliado = extrato.valor_conciliado - 90
 
                     # Remover dos não conciliados
-                    if encontrista in encontreiros_nao_conciliados:
-                        encontreiros_nao_conciliados.remove(encontrista)
-                    if extrato in extratos_nao_conciliados:
-                        vezes_a_conciliar = int(float(valor_pago) / 90)
-                        if extrato.num_conciliado == vezes_a_conciliar:
-                            extratos_nao_conciliados.remove(extrato)
+                    if encontreiro in self.encontreiros_nao_conciliados:
+                        self.encontreiros_nao_conciliados.remove(encontreiro)
+                    if extrato in self.extratos_nao_conciliados:
+                        if extrato.valor_conciliado == 0:
+                            self.extratos_nao_conciliados.remove(extrato)
+                        else:
+                            print('Deve conciliar mais vezes ...')
+                            print(extrato)
+                    conciliado = True
+                    break
+            
+            if conciliado is False: 
+                print('Não foi possivel conciliar o encontreiro!!')
+                print('#########################')
+                print(encontreiro)
+
+        print('---------------- FINALIZANDO CONCILIAÇÃO ------------')
+
+    def conciliar_encontrista(self):
+        encontristas = self.encontrista_nao_conciliado.copy()
+        
+        for encontrista in encontristas:
+            data_pgto = datetime.strptime(encontrista.dt_lancamento, '%d/%m/%Y')
+            data_corte = datetime.strptime('11/04/2025', '%d/%m/%Y')
+            if data_pgto > data_corte:
+                self.encontrista_nao_conciliado.remove(encontrista)
+                continue
+            
+            if encontrista.tipo == 'DINHEIRO':
+                print('Encontrista em espécie')
+                print(encontrista)
+                continue
+            
+            conciliado = False
+            for extrato in self.extratos_nao_conciliados:
+                data_extrato = datetime.strptime(extrato.dt_lancamento, '%d/%m/%Y')
+                
+                if data_pgto.year != data_extrato.year or data_pgto.month != data_extrato.month or data_pgto.day != data_extrato.day:
+                    continue
+                
+                if self._nomes_sao_similares(extrato.nome, encontrista.pagador) and float(extrato.valor) == encontrista.valor:
+                    self.encontristas_conciliados.append({
+                        "ID FICHA": encontrista.id,
+                        "DT INSCRIÇÃO": encontrista.dt_lancamento,
+                        "DT EXTRATO": extrato.dt_lancamento,
+                        "NOME COMPLETO": extrato.nome,
+                        "VALOR PAGO": encontrista.valor
+                    })
+                    self.extratos_conciliados.append(extrato)
+                    extrato.valor_conciliado = extrato.valor_conciliado - encontrista.valor
+
+                    # Remover dos não conciliados
+                    if encontrista in self.encontrista_nao_conciliado:
+                        self.encontrista_nao_conciliado.remove(encontrista)
+                    if extrato in self.extratos_nao_conciliados:
+                        if extrato.valor_conciliado == 0:
+                            self.extratos_nao_conciliados.remove(extrato)
                         else:
                             print('Deve conciliar mais vezes ...')
                             print(extrato)
@@ -54,27 +122,37 @@ class Conciliador:
                 print('Não foi possivel conciliar o encontrista!!')
                 print('#########################')
                 print(encontrista)
+        
+        
+        print('---------------- FINALIZANDO CONCILIAÇÃO ------------')
 
-        # Salvar os restantes
-        self.encontreiros_nao_conciliados = encontreiros_nao_conciliados
-        self.extratos_nao_conciliados = extratos_nao_conciliados
-
-
+# #######################################################################################################
+# #######################################################################################################
+# #######################################################################################################
     def get_encontreiros_conciliados(self):
         return self.encontreiros_conciliados
 
     def get_encontreiros_nao_conciliados(self):
         return self.encontreiros_nao_conciliados
     
+    def get_encontrista_conciliados(self):
+        return self.encontristas_conciliados
+
+    def get_encontrista_nao_conciliados(self):
+        return self.encontrista_nao_conciliado
+    
     def get_extratos_nao_conciliados(self):
         return self.extratos_nao_conciliados
+    
+    def get_extratos_conciliados(self):
+        return self.extratos_conciliados
     
     def _nomes_sao_similares(self, nome_extrato: str, nome_pagador: str) -> bool:
         partes_extrato = self._normalizar(nome_extrato).split()
         partes_pagador = self._normalizar(nome_pagador).split()
 
-        if len(partes_extrato) > 0 and partes_extrato[0] == 'ana' and partes_pagador[0] == 'ana':
-            print('Ana ....')
+        # if len(partes_extrato) > 0 and partes_extrato[0] == 'esdras' and partes_pagador[0] == 'esdras':
+        #     print('Esdras ....')
 
         if not partes_extrato or not partes_pagador:
             return False

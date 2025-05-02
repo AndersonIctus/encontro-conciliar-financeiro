@@ -5,7 +5,7 @@ class Extrato:
         self.nome = nome
         self.tipo = tipo
         self.valor = valor
-        self.num_conciliado = 0
+        self.valor_conciliado = valor
 
     def __repr__(self):
         return (
@@ -16,7 +16,7 @@ class Extrato:
     def __eq__(self, other):
         if not isinstance(other, Extrato):
             return False
-        return self.nome == other.nome and self.valor == other.valor
+        return self.nome == other.nome and self.valor == other.valor and self.dt_lancamento == other.dt_lancamento
 
     def __hash__(self):
         return hash((self.nome, self.valor))

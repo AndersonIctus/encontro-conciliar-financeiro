@@ -12,6 +12,7 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '.
 
 from application.src.conciliador import Conciliador
 from application.src.models.extrato import Extrato
+from application.src.models.encontrista import Encontrista
 from application.src.planilha_utils import PlanilhaUtils
 
 load_dotenv()
@@ -71,28 +72,86 @@ def carregar_extratos(pasta_extratos: str) -> list[Extrato]:
                 )
     return extratos
 
+def carregar_encontristas(pasta_extratos: str) -> list[Encontrista]:
+    extratos = []
+    caminho_pasta = Path(pasta_extratos) / 'valores-encontristas.csv'
+    print(caminho_pasta.resolve())  # mostra o caminho absoluto
+
+    
+    with open(caminho_pasta, newline='', encoding='utf-8') as csvfile:
+        leitor = csv.DictReader(csvfile, delimiter=';')
+        
+        index = 0
+        for linha in leitor:
+            id_str = linha["ID"]
+            data = linha["Data Lançamento"]
+            pagador = linha["Pagador"]
+            tipo = linha["Tipo"]
+            valor_str = linha["Valor"]
+            
+            try:
+                id_ = int(id_str)
+                valor = float(valor_str)
+            except ValueError:
+                print(f"❌ Valor inválido '{valor_str}' no arquivo valores-encontristas.csv, na linha {index + 1}. Usando 0.0.")
+                valor = 0.0
+                
+            index = index + 1
+            extratos.append(
+                Encontrista(id=id_, pagador=pagador, dt_lancamento=data, tipo=tipo, valor=valor)
+            )
+    
+    return extratos
+    
 
 def main():
     planilha_utils = PlanilhaUtils()
     extratos = carregar_extratos("extrato-bancario")
+    encontristas = carregar_encontristas("extrato-encontrista")
 
-    conciliador = Conciliador(planilha_utils, extratos)
-    conciliador.conciliar_encontreiro()
+    conciliador = Conciliador(planilha_utils, extratos, encontristas)
+    # conciliador.conciliar_encontreiro()
+    conciliador.conciliar_encontrista()
 
     # conciliados = conciliador.get_encontreiros_conciliados()
-    nao_conciliados = conciliador.get_encontreiros_nao_conciliados()
+    # nao_conciliados = conciliador.get_encontreiros_nao_conciliados()
     
-    # print("-------------------- CONCILIADOS")
+    # extrato_conciliado = conciliador.get_extratos_conciliados()
+    
+    # print("---------------------------------------------------")
+    # print("---------------------------------------------------")
+    # print("-------------------- ENCONTREIRO CONCILIADOS")
+    # idx = 0
     # for con in conciliados:
+    #     print('##  ' + str(idx))
     #     print(con)
+    #     print('\r\n')
+    #     idx = idx + 1
         
-    print("-------------------- ENCONTREIROS NÃO - CONCILIADOS")
+    # print("---------------------------------------------------")
+    # print("---------------------------------------------------")
+    # print("-------------------- ENCONTREIROS NÃO - CONCILIADOS")
+    # idx = 0
+    # for n_con in nao_conciliados:
+    #     print('##  ' + str(idx))
+    #     print(n_con)
+    #     print('\r\n')
+    #     idx = idx + 1
+    
+    
+    encontrista_conciliado = conciliador.get_encontrista_conciliados()
+    print("---------------------------------------------------")
+    print("---------------------------------------------------")
+    print("-------------------- ENCONTRISTA CONCILIADOS")
     idx = 0
-    for n_con in nao_conciliados:
+    for con in encontrista_conciliado:
         print('##  ' + str(idx))
-        print(n_con)
+        print(con)
         print('\r\n')
         idx = idx + 1
+        
+    print("--------------------             ------------------")
+        
 
     # Path("conciliado").mkdir(exist_ok=True)
     # planilha_utils.salvar_excel_conciliado(conciliados, nao_conciliados)
