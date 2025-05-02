@@ -14,6 +14,7 @@ from application.src.conciliador import Conciliador
 from application.src.models.extrato import Extrato
 from application.src.models.encontrista import Encontrista
 from application.src.models.despesa import Despesa
+from application.src.models.outro_valor import OutroValor
 from application.src.planilha_utils import PlanilhaUtils
 
 load_dotenv()
@@ -132,12 +133,44 @@ def carregar_despesas(pasta_extratos: str) -> list[Despesa]:
                 id_ = int(id_str)
                 valor = float(valor_str)
             except ValueError:
-                print(f"❌ Valor inválido '{valor_str}' no arquivo valores-encontristas.csv, na linha {index + 1}. Usando 0.0.")
+                print(f"❌ Valor inválido '{valor_str}' no arquivo despesas.csv, na linha {index + 1}. Usando 0.0.")
                 valor = 0.0
                 
             index = index + 1
             lista_retorno.append(
                 Despesa(id=id_, descricao=descricao, data=data, tipo=tipo, valor=valor, observacao=observacao)
+            )
+    
+    return lista_retorno
+
+def carregar_outros(pasta_extratos: str) -> list[OutroValor]:
+    lista_retorno = []
+    caminho_pasta = Path(pasta_extratos) / 'outros-valores.csv'
+    print(caminho_pasta.resolve())  # mostra o caminho absoluto
+    
+    with open(caminho_pasta, newline='', encoding='utf-8') as csvfile:
+        leitor = csv.DictReader(csvfile, delimiter=';')
+        
+        index = 0
+        for linha in leitor:
+            id_str = linha["ID"]
+            data = linha["Data Lançamento"]
+            nome = linha["Descrição"]
+            tipo = linha["Tipo"]
+            formaPgto = linha["Forma Pgto"]
+            valor_str = linha["Valor"]
+            observacao = linha["Observacao"]
+            
+            try:
+                id_ = int(id_str)
+                valor = float(valor_str)
+            except ValueError:
+                print(f"❌ Valor inválido '{valor_str}' no arquivo outros-valores.csv, na linha {index + 1}. Usando 0.0.")
+                valor = 0.0
+                
+            index = index + 1
+            lista_retorno.append(
+                OutroValor(id=id_, nome=nome, data=data, tipo=tipo, formaPgto=formaPgto, valor=valor, observacao=observacao)
             )
     
     return lista_retorno
@@ -161,20 +194,25 @@ def main():
     extratos = carregar_extratos("extrato-bancario")
     encontristas = carregar_encontristas("extrato-encontrista")
     despesas = carregar_despesas("extrato-despesa")
+    outros_valores = carregar_outros("extrato-outros")
 
-    conciliador = Conciliador(planilha_utils, extratos, encontristas, despesas)
+    conciliador = Conciliador(planilha_utils, extratos, encontristas, despesas, outros_valores)
     conciliador.conciliar_encontreiro()
     conciliador.conciliar_encontrista()
     conciliador.conciliar_despesas()
+    conciliador.conciliar_outros()
 
     # imprimir_lista(conciliador.get_encontreiros_conciliados(), 'ENCONTREIRO CONCILIADOS')
-    # imprimir_lista(conciliador.get_encontreiros_nao_conciliados(), 'ENCONTREIRO NÃO CONCILIADOS')
+    imprimir_lista(conciliador.get_encontreiros_nao_conciliados(), 'ENCONTREIRO NÃO CONCILIADOS')
     
     # imprimir_lista(conciliador.get_encontrista_conciliados(), 'ENCONTRISTA CONCILIADOS')
-    # imprimir_lista(conciliador.get_encontrista_nao_conciliados(), 'ENCONTRISTA NÃO CONCILIADOS')
+    imprimir_lista(conciliador.get_encontrista_nao_conciliados(), 'ENCONTRISTA NÃO CONCILIADOS')
 
     # imprimir_lista(conciliador.get_despesas_conciliados(), 'DESPESAS CONCILIADAS')
-    # imprimir_lista(conciliador.get_despesas_nao_conciliados(), 'DESPESAS NÃO CONCILIADAS')
+    imprimir_lista(conciliador.get_despesas_nao_conciliados(), 'DESPESAS NÃO CONCILIADAS')
+    
+    # imprimir_lista(conciliador.get_outros_conciliados(), 'OUTROS CONCILIADAS')
+    imprimir_lista(conciliador.get_outros_nao_conciliados(), 'OUTROS NÃO CONCILIADAS')
     
     # imprimir_lista(conciliador.get_extratos_conciliados(), 'EXTRATO CONCILIADOS')
     imprimir_lista(conciliador.get_extratos_nao_conciliados(), 'EXTRATO NÃO CONCILIADOS')
