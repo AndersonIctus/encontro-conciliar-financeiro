@@ -13,6 +13,7 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '.
 from application.src.conciliador import Conciliador
 from application.src.models.extrato import Extrato
 from application.src.models.encontrista import Encontrista
+from application.src.models.despesa import Despesa
 from application.src.planilha_utils import PlanilhaUtils
 
 load_dotenv()
@@ -110,6 +111,37 @@ def carregar_encontristas(pasta_extratos: str) -> list[Encontrista]:
     
     return extratos
 
+def carregar_despesas(pasta_extratos: str) -> list[Despesa]:
+    lista_retorno = []
+    caminho_pasta = Path(pasta_extratos) / 'valores-despesas.csv'
+    print(caminho_pasta.resolve())  # mostra o caminho absoluto
+    
+    with open(caminho_pasta, newline='', encoding='utf-8') as csvfile:
+        leitor = csv.DictReader(csvfile, delimiter=';')
+        
+        index = 0
+        for linha in leitor:
+            id_str = linha["ID"]
+            data = linha["Data Lançamento"]
+            descricao = linha["Descrição"]
+            tipo = linha["Tipo"]
+            valor_str = linha["Valor"]
+            observacao = linha["Observacao"]
+            
+            try:
+                id_ = int(id_str)
+                valor = float(valor_str)
+            except ValueError:
+                print(f"❌ Valor inválido '{valor_str}' no arquivo valores-encontristas.csv, na linha {index + 1}. Usando 0.0.")
+                valor = 0.0
+                
+            index = index + 1
+            lista_retorno.append(
+                Despesa(id=id_, descricao=descricao, data=data, tipo=tipo, valor=valor, observacao=observacao)
+            )
+    
+    return lista_retorno
+
 
 def imprimir_lista(lista: list, titulo: str):
     print("")
@@ -128,10 +160,12 @@ def main():
     planilha_utils = PlanilhaUtils()
     extratos = carregar_extratos("extrato-bancario")
     encontristas = carregar_encontristas("extrato-encontrista")
+    despesas = carregar_despesas("extrato-despesa")
 
-    conciliador = Conciliador(planilha_utils, extratos, encontristas)
+    conciliador = Conciliador(planilha_utils, extratos, encontristas, despesas)
     conciliador.conciliar_encontreiro()
     conciliador.conciliar_encontrista()
+    conciliador.conciliar_despesas()
 
     # imprimir_lista(conciliador.get_encontreiros_conciliados(), 'ENCONTREIRO CONCILIADOS')
     # imprimir_lista(conciliador.get_encontreiros_nao_conciliados(), 'ENCONTREIRO NÃO CONCILIADOS')
@@ -139,8 +173,11 @@ def main():
     # imprimir_lista(conciliador.get_encontrista_conciliados(), 'ENCONTRISTA CONCILIADOS')
     # imprimir_lista(conciliador.get_encontrista_nao_conciliados(), 'ENCONTRISTA NÃO CONCILIADOS')
 
+    # imprimir_lista(conciliador.get_despesas_conciliados(), 'DESPESAS CONCILIADAS')
+    # imprimir_lista(conciliador.get_despesas_nao_conciliados(), 'DESPESAS NÃO CONCILIADAS')
+    
     # imprimir_lista(conciliador.get_extratos_conciliados(), 'EXTRATO CONCILIADOS')
-    # imprimir_lista(conciliador.get_extratos_nao_conciliados(), 'EXTRATO NÃO CONCILIADOS')
+    imprimir_lista(conciliador.get_extratos_nao_conciliados(), 'EXTRATO NÃO CONCILIADOS')
     
     imprimir_lista(conciliador.get_valores_em_dinheiro(), 'VALORES EM DINHEIRO')
     

@@ -177,3 +177,4 @@ cython_debug/
 /credentials/credentials.json
 !/extrato-bancario
 !/extrato-encontrista
+!/extrato-despesa

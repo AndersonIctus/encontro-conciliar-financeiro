@@ -4,12 +4,13 @@ import unicodedata
 
 from application.src.models.extrato import Extrato
 from application.src.models.encontrista import Encontrista
+from application.src.models.despesa import Despesa
 from application.src.planilha_utils import PlanilhaUtils
 from datetime import datetime
 
 
 class Conciliador:
-    def __init__(self, planilha_utils: PlanilhaUtils, extratos: List[Extrato], encontristas: list[Encontrista]):
+    def __init__(self, planilha_utils: PlanilhaUtils, extratos: List[Extrato], encontristas: list[Encontrista], despesas: list[Despesa]):
         self.planilha_utils = planilha_utils
         self.extratos_conciliados = []
         self.extratos_nao_conciliados = extratos.copy()
@@ -17,6 +18,9 @@ class Conciliador:
         self.encontreiros_nao_conciliados = []
         self.encontristas_conciliados = []
         self.encontrista_nao_conciliado = encontristas.copy()
+        
+        self.despesas_conciliados = []
+        self.despesas_nao_conciliados = despesas.copy()
         self.valores_em_dinheiro = []
         
 
@@ -103,7 +107,7 @@ class Conciliador:
                     "NOME": encontrista.pagador,
                     "TIPO": "ENCONTRISTA",
                     "VALOR PAGO": encontrista.valor,
-                    "DETALHES DO PAGAMENTO": "Dinheiro pago em Espécie"
+                    "DETALHES DO PAGAMENTO": encontrista.observacao
                 })
                 continue
             
@@ -122,7 +126,6 @@ class Conciliador:
                         "NOME COMPLETO": extrato.nome,
                         "VALOR PAGO": encontrista.valor
                     })
-                    self.extratos_conciliados.append(extrato)
                     extrato.valor_conciliado = extrato.valor_conciliado - encontrista.valor
 
                     # Remover dos não conciliados
@@ -131,6 +134,7 @@ class Conciliador:
                         
                     if extrato in self.extratos_nao_conciliados:
                         if extrato.valor_conciliado == 0:
+                            self.extratos_conciliados.append(extrato)
                             self.extratos_nao_conciliados.remove(extrato)
                         else:
                             print('Deve conciliar mais vezes ...')
@@ -143,6 +147,65 @@ class Conciliador:
                 print('#########################')
                 print(encontrista)
         
+        print('---------------- FINALIZANDO CONCILIAÇÃO ------------')
+
+    def conciliar_despesas(self):
+        despesas = self.despesas_nao_conciliados.copy()
+        
+        for despesa in despesas:
+            data_pgto = datetime.strptime(despesa.data, '%d/%m/%Y')
+            
+            data_corte = datetime.strptime('02/05/2025', '%d/%m/%Y')
+            if data_pgto > data_corte:
+                self.despesas_nao_conciliados.remove(despesa)
+                continue
+            
+            if despesa.tipo == 'DINHEIRO':
+                self.despesas_nao_conciliados.remove(despesa)
+                self.valores_em_dinheiro.append({
+                    "DATA": despesa.data,
+                    "NOME": despesa.descricao,
+                    "TIPO": "DESPESA",
+                    "VALOR PAGO": despesa.valor,
+                    "DETALHES DO PAGAMENTO": despesa.observacao
+                })
+                continue
+            
+            conciliado = False
+            for extrato in self.extratos_nao_conciliados:
+                data_extrato = datetime.strptime(extrato.dt_lancamento, '%d/%m/%Y')
+                
+                if data_pgto.year != data_extrato.year or data_pgto.month != data_extrato.month or data_pgto.day != data_extrato.day:
+                    continue
+                
+                if self._nomes_sao_similares(extrato.nome, despesa.descricao) and (float(extrato.valor) * -1) == despesa.valor:
+                    self.despesas_conciliados.append({
+                        "ID FICHA": despesa.id,
+                        "DT INSCRIÇÃO": despesa.data,
+                        "DT EXTRATO": extrato.dt_lancamento,
+                        "NOME COMPLETO": extrato.nome,
+                        "VALOR PAGO": despesa.valor
+                    })
+                    extrato.valor_conciliado = extrato.valor_conciliado - despesa.valor
+
+                    # Remover dos não conciliados
+                    if despesa in self.despesas_nao_conciliados:
+                        self.despesas_nao_conciliados.remove(despesa)
+                        
+                    if extrato in self.extratos_nao_conciliados:
+                        if extrato.valor_conciliado == 0:
+                            self.extratos_conciliados.append(extrato)
+                            self.extratos_nao_conciliados.remove(extrato)
+                        else:
+                            print('Deve conciliar mais vezes ...')
+                            print(extrato)
+                    conciliado = True
+                    break
+            
+            if conciliado is False: 
+                print('Não foi possivel conciliar o encontrista!!')
+                print('#########################')
+                print(despesa)
         
         print('---------------- FINALIZANDO CONCILIAÇÃO ------------')
 
@@ -167,8 +230,17 @@ class Conciliador:
     def get_extratos_conciliados(self):
         return self.extratos_conciliados
     
+    def get_despesas_conciliados(self):
+        return self.despesas_conciliados
+    
+    def get_despesas_nao_conciliados(self):
+        return self.despesas_nao_conciliados
+    
     def get_valores_em_dinheiro(self):
         return self.valores_em_dinheiro
+
+    # self.despesas_conciliados = []
+    #     self.despesas_nao_conciliados = despesas.copy()
     
     def _nomes_sao_similares(self, nome_extrato: str, nome_pagador: str) -> bool:
         partes_extrato = self._normalizar(nome_extrato).split()
