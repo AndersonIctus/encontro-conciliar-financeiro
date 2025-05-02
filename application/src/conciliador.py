@@ -17,6 +17,7 @@ class Conciliador:
         self.encontreiros_nao_conciliados = []
         self.encontristas_conciliados = []
         self.encontrista_nao_conciliado = encontristas.copy()
+        self.valores_em_dinheiro = []
         
 
     def conciliar_encontreiro(self):
@@ -26,12 +27,24 @@ class Conciliador:
         for encontreiro in linhas_planilha_encontreiro:
             nome_pagador = str(encontreiro.get("NOME DO PAGADOR:", "")).strip()
             valor_pago = float(str(encontreiro.get("VALOR PAGO:", "")).replace(",", ".").replace('R$', '').strip())/100
+            observacao = str(encontreiro.get("DETALHES DO PAGAMENTO", "")).strip()
             data_inscricao = str(encontreiro.get("Carimbo de data/hora", "")).strip()
             data_pgto = datetime.strptime(str(encontreiro.get("DATA DO PAGAMENTO", "")).strip(), '%d/%m/%Y')
             
-            data_corte = datetime.strptime('11/04/2025', '%d/%m/%Y')
+            data_corte = datetime.strptime('02/05/2025', '%d/%m/%Y')
             if data_pgto > data_corte:
                 self.encontreiros_nao_conciliados.remove(encontreiro)
+                continue
+            
+            if "dinheiro" in observacao.lower():
+                self.encontreiros_nao_conciliados.remove(encontreiro)
+                self.valores_em_dinheiro.append({
+                    "DATA": data_inscricao,
+                    "NOME": encontreiro.get("NOME COMPLETO", ""),
+                    "TIPO": "ENCONTREIRO",
+                    "VALOR PAGO": valor_pago,
+                    "DETALHES DO PAGAMENTO": observacao
+                })
                 continue
             
             conciliado = False
@@ -46,12 +59,10 @@ class Conciliador:
                         "DT INSCRIÇÃO": data_inscricao,
                         "DT EXTRATO": extrato.dt_lancamento,
                         "NOME COMPLETO": encontreiro.get("NOME COMPLETO", ""),
-                        "@ DO INSTAGRAM": encontreiro.get("@ DO INSTAGRAM", ""),
                         "NOME DO PAGADOR": nome_pagador,
                         "VALOR PAGO": valor_pago,
                         "DETALHES DO PAGAMENTO": encontreiro.get("DETALHES DO PAGAMENTO", "")
                     })
-                    self.extratos_conciliados.append(extrato)
                     extrato.valor_conciliado = extrato.valor_conciliado - 90
 
                     # Remover dos não conciliados
@@ -59,6 +70,7 @@ class Conciliador:
                         self.encontreiros_nao_conciliados.remove(encontreiro)
                     if extrato in self.extratos_nao_conciliados:
                         if extrato.valor_conciliado == 0:
+                            self.extratos_conciliados.append(extrato)
                             self.extratos_nao_conciliados.remove(extrato)
                         else:
                             print('Deve conciliar mais vezes ...')
@@ -78,14 +90,21 @@ class Conciliador:
         
         for encontrista in encontristas:
             data_pgto = datetime.strptime(encontrista.dt_lancamento, '%d/%m/%Y')
-            data_corte = datetime.strptime('11/04/2025', '%d/%m/%Y')
+            
+            data_corte = datetime.strptime('02/05/2025', '%d/%m/%Y')
             if data_pgto > data_corte:
                 self.encontrista_nao_conciliado.remove(encontrista)
                 continue
             
             if encontrista.tipo == 'DINHEIRO':
-                print('Encontrista em espécie')
-                print(encontrista)
+                self.encontrista_nao_conciliado.remove(encontrista)
+                self.valores_em_dinheiro.append({
+                    "DATA": encontrista.dt_lancamento,
+                    "NOME": encontrista.pagador,
+                    "TIPO": "ENCONTRISTA",
+                    "VALOR PAGO": encontrista.valor,
+                    "DETALHES DO PAGAMENTO": "Dinheiro pago em Espécie"
+                })
                 continue
             
             conciliado = False
@@ -95,7 +114,7 @@ class Conciliador:
                 if data_pgto.year != data_extrato.year or data_pgto.month != data_extrato.month or data_pgto.day != data_extrato.day:
                     continue
                 
-                if self._nomes_sao_similares(extrato.nome, encontrista.pagador) and float(extrato.valor) == encontrista.valor:
+                if self._nomes_sao_similares(extrato.nome, encontrista.pagador):
                     self.encontristas_conciliados.append({
                         "ID FICHA": encontrista.id,
                         "DT INSCRIÇÃO": encontrista.dt_lancamento,
@@ -109,6 +128,7 @@ class Conciliador:
                     # Remover dos não conciliados
                     if encontrista in self.encontrista_nao_conciliado:
                         self.encontrista_nao_conciliado.remove(encontrista)
+                        
                     if extrato in self.extratos_nao_conciliados:
                         if extrato.valor_conciliado == 0:
                             self.extratos_nao_conciliados.remove(extrato)
@@ -146,6 +166,9 @@ class Conciliador:
     
     def get_extratos_conciliados(self):
         return self.extratos_conciliados
+    
+    def get_valores_em_dinheiro(self):
+        return self.valores_em_dinheiro
     
     def _nomes_sao_similares(self, nome_extrato: str, nome_pagador: str) -> bool:
         partes_extrato = self._normalizar(nome_extrato).split()

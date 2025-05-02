@@ -1,21 +1,44 @@
-ID;Data Lançamento;Pagador;Tipo;Valor
-1;22/03/2025;Bianca Rossane Alencar Queiroz;PIX;75
-2;22/03/2025;Camila Lime Teixeira;PIX;95
-3;22/03/2025;Bruno Albuquerque da Silva;PIX;75
-4;22/03/2025;Gabriela Matias;PIX;150
-5;22/03/2025;Georgina Maria Damasceno Silva;PIX;75
-6;29/03/2025;Iuri de Sousa Trajano;PIX;95
-7;29/03/2025;Júlia Augusto da Silva Bento;PIX;170
-8;29/03/2025;Carla Caroline de Castro;PIX;75
-9;29/03/2025;Ana Patrícia;PIX;95
-10;29/03/2025;Ruth Safira;PIX;150
-11;05/04/2025;Bianca Rossane;PIX;170
-12;05/04/2025;Daniel Da Silva Oliveira;PIX;170
-13;05/04/2025;Espécie;DINHEIRO;170
-14;05/04/2025;Daniel Oliveira;PIX;170
-15;16/04/2025;Ruth Safira Abreu Pinheiro;PIX;170
-16;12/04/2025;Dâmila Narla;PIX;300
-17;12/04/2025;Dâmila Narla;PIX;300
-18;12/04/2025;Daniel Oliveira;PIX;170
-19;12/04/2025;Fernando César Rocha;PIX;150
-20;12/04/2025;Fernando César Rocha;PIX;150
+ID;Data Lançamento;Pagador;Tipo;Valor;Observacao
+1;22/03/2025;Bianca Rossane Alencar Queiroz;PIX;75;
+2;22/03/2025;Camila Lime Teixeira;PIX;95;
+3;22/03/2025;Bruno Albuquerque da Silva;PIX;75;
+4;22/03/2025;Gabriela Matias;PIX;150;
+5;22/03/2025;Georgina Maria Damasceno Silva;PIX;75;
+6;29/03/2025;Iuri de Sousa Trajano;PIX;95;
+7;29/03/2025;Júlia Augusto da Silva Bento;PIX;170;
+8;29/03/2025;Carla Caroline de Castro;PIX;75;
+9;29/03/2025;Ana Patrícia;PIX;95;
+10;29/03/2025;Ruth Safira Abreu Pinheiro;PIX;150;
+11;05/04/2025;Bianca Rossane;PIX;170;
+12;05/04/2025;Daniel Da Silva Oliveira;DINHEIRO;170;
+13;05/04/2025;Daniel Da Silva Oliveira;DINHEIRO;170;
+14;05/04/2025;Daniel Da Silva Oliveira;PIX;170;
+15;16/04/2025;Ruth Safira Abreu Pinheiro;PIX;20;
+15;16/04/2025;Ruth Safira Abreu Pinheiro;PIX;150;
+16;12/04/2025;Damilla Narla Sampaio Vieira;PIX;150;Pagamento de 2 fichas em pix R$ 300,00
+17;12/04/2025;Damilla Narla Sampaio Vieira;PIX;150;Pagamento de 2 fichas em pix R$ 300,00
+18;12/04/2025;Daniel Da Silva Oliveira;PIX;170;
+19;12/04/2025;Fernando César Rocha;PIX;150;
+20;12/04/2025;Fernando César Rocha;PIX;150;
+21;13/04/2025;Carla Vitoria Araujo Barros;PIX;150;Pagamento de 2 fichas em pix R$ 300,00 
+21;13/04/2025;Carla Vitoria Araujo Barros;PIX;20;Pagamento de biscoitos em pix R$ 40,00 
+22;13/04/2025;Carla Vitoria Araujo Barros;PIX;150;Pagamento de 2 fichas em pix R$ 300,00 
+22;13/04/2025;Carla Vitoria Araujo Barros;PIX;20;Pagamento de biscoitos em pix R$ 40,00 
+23;23/04/2025;Girlancio Furtado De Queiroz;PIX;150;
+24;26/04/2025;Bianca Rossane;PIX;150;
+25;26/04/2025;Otávio;PIX;150;????
+26;26/04/2025;Jessica Martins Pereira;PIX;170;
+27;26/04/2025;Jose Gilson Saboia De Souza Filho;PIX;150;
+28;26/04/2025;Rodrigo Sá da Costa;PIX;170;
+29;26/04/2025;Rodrigo Sá da Costa;PIX;170;
+30;26/04/2025;Rodrigo Sá da Costa;PIX;170;
+31;26/04/2025;Francisco G Costa Santos;PIX;150;
+32;26/04/2025;Heraldo Silva Pinheiro;PIX;170;
+33;26/04/2025;Ana Lucia Sousa De Aguiar;PIX;150;
+34;27/04/2025;Ana Caroline De Paula Neves;PIX;170;
+35;01/05/2025;Vinicius De Alcantra Barros;PIX;170;
+36;02/05/2025;Hellenvivian De Alcantara Barros;PIX;150;Pagamento via PIX, responsável Bianca
+37;20/04/2025;Cauã Witelle Bento De Sousa;PIX;150;
+38;22/04/2025;Karen Maiara Melo Vieira;PIX;150;
+39;22/04/2025;Karen Maiara Melo Vieira;PIX;150;
+40;22/04/2025;Karen Maiara Melo Vieira;PIX;150;

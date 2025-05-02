@@ -51,8 +51,8 @@ def carregar_extratos(pasta_extratos: str) -> list[Extrato]:
                 nome = re.sub(r'\d+', '', nome_bruto).strip()
                 
                 tipo = linha.get("Histórico", "").strip()
-                saldo = linha.get("Saldo", "").strip()
                 valor_str = linha.get("Valor", "0").replace(".", "").replace(",", ".").strip()
+                saldo_str = linha.get("Saldo", "0").replace(".", "").replace(",", ".").strip()
 
                 try:
                     valor = float(valor_str)
@@ -60,15 +60,21 @@ def carregar_extratos(pasta_extratos: str) -> list[Extrato]:
                     print(f"❌ Valor inválido '{valor_str}' no arquivo {arquivo.name}, na linha {index + idx_cabecalho}. Usando 0.0.")
                     valor = 0.0
                     
+                try:
+                    saldo = float(saldo_str)
+                except ValueError:
+                    print(f"❌ Valor inválido '{saldo_str}' no arquivo {arquivo.name}, na linha {index + idx_cabecalho}. Usando 0.0.")
+                    saldo = 0.0
+                    
                 # Criar uma chave única para identificar duplicatas
-                chave_unica = f"{nome.lower()}|{data_lancamento}|{valor:.2f}|{saldo}"
+                chave_unica = f"{nome.lower()}|{data_lancamento}|{valor:.2f}|{saldo_str}"
                 if chave_unica in registros_unicos:
                     continue  # Pula se já existe
                 registros_unicos.add(chave_unica)
                 
                 index = index + 1
                 extratos.append(
-                    Extrato(nome=nome, dt_lancamento=data_lancamento, tipo=tipo, valor=valor)
+                    Extrato(nome=nome, dt_lancamento=data_lancamento, tipo=tipo, valor=valor, saldo=saldo)
                 )
     return extratos
 
@@ -88,6 +94,7 @@ def carregar_encontristas(pasta_extratos: str) -> list[Encontrista]:
             pagador = linha["Pagador"]
             tipo = linha["Tipo"]
             valor_str = linha["Valor"]
+            observacao = linha["Observacao"]
             
             try:
                 id_ = int(id_str)
@@ -98,11 +105,24 @@ def carregar_encontristas(pasta_extratos: str) -> list[Encontrista]:
                 
             index = index + 1
             extratos.append(
-                Encontrista(id=id_, pagador=pagador, dt_lancamento=data, tipo=tipo, valor=valor)
+                Encontrista(id=id_, pagador=pagador, dt_lancamento=data, tipo=tipo, valor=valor, observacao=observacao)
             )
     
     return extratos
-    
+
+
+def imprimir_lista(lista: list, titulo: str):
+    print("")
+    print("")
+    print("---------------------------------------------------")
+    print("---------------------------------------------------")
+    print(f"--------------------------- {titulo}")
+    idx = 0
+    for con in lista:
+        print('##  ' + str(idx))
+        print(con)
+        print('\r\n')
+        idx = idx + 1 
 
 def main():
     planilha_utils = PlanilhaUtils()
@@ -110,48 +130,21 @@ def main():
     encontristas = carregar_encontristas("extrato-encontrista")
 
     conciliador = Conciliador(planilha_utils, extratos, encontristas)
-    # conciliador.conciliar_encontreiro()
+    conciliador.conciliar_encontreiro()
     conciliador.conciliar_encontrista()
 
-    # conciliados = conciliador.get_encontreiros_conciliados()
-    # nao_conciliados = conciliador.get_encontreiros_nao_conciliados()
+    # imprimir_lista(conciliador.get_encontreiros_conciliados(), 'ENCONTREIRO CONCILIADOS')
+    # imprimir_lista(conciliador.get_encontreiros_nao_conciliados(), 'ENCONTREIRO NÃO CONCILIADOS')
     
-    # extrato_conciliado = conciliador.get_extratos_conciliados()
+    # imprimir_lista(conciliador.get_encontrista_conciliados(), 'ENCONTRISTA CONCILIADOS')
+    # imprimir_lista(conciliador.get_encontrista_nao_conciliados(), 'ENCONTRISTA NÃO CONCILIADOS')
+
+    # imprimir_lista(conciliador.get_extratos_conciliados(), 'EXTRATO CONCILIADOS')
+    # imprimir_lista(conciliador.get_extratos_nao_conciliados(), 'EXTRATO NÃO CONCILIADOS')
     
-    # print("---------------------------------------------------")
-    # print("---------------------------------------------------")
-    # print("-------------------- ENCONTREIRO CONCILIADOS")
-    # idx = 0
-    # for con in conciliados:
-    #     print('##  ' + str(idx))
-    #     print(con)
-    #     print('\r\n')
-    #     idx = idx + 1
-        
-    # print("---------------------------------------------------")
-    # print("---------------------------------------------------")
-    # print("-------------------- ENCONTREIROS NÃO - CONCILIADOS")
-    # idx = 0
-    # for n_con in nao_conciliados:
-    #     print('##  ' + str(idx))
-    #     print(n_con)
-    #     print('\r\n')
-    #     idx = idx + 1
+    imprimir_lista(conciliador.get_valores_em_dinheiro(), 'VALORES EM DINHEIRO')
     
-    
-    encontrista_conciliado = conciliador.get_encontrista_conciliados()
-    print("---------------------------------------------------")
-    print("---------------------------------------------------")
-    print("-------------------- ENCONTRISTA CONCILIADOS")
-    idx = 0
-    for con in encontrista_conciliado:
-        print('##  ' + str(idx))
-        print(con)
-        print('\r\n')
-        idx = idx + 1
-        
     print("--------------------             ------------------")
-        
 
     # Path("conciliado").mkdir(exist_ok=True)
     # planilha_utils.salvar_excel_conciliado(conciliados, nao_conciliados)

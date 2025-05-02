@@ -1,22 +1,23 @@
 # Data Lançamento;Histórico;Descrição;Valor;Saldo
 class Extrato:
-    def __init__(self, dt_lancamento: str, nome: str,  tipo: str, valor: float):
+    def __init__(self, dt_lancamento: str, nome: str,  tipo: str, valor: float, saldo: float):
         self.dt_lancamento = dt_lancamento
         self.nome = nome
         self.tipo = tipo
         self.valor = valor
+        self.saldo = saldo
         self.valor_conciliado = valor
 
     def __repr__(self):
         return (
             f"Extrato(dt_lancamento ='{self.dt_lancamento}', nome='{self.nome}', "
-            f"tipo='{self.tipo}', valor={self.valor})"
+            f"tipo='{self.tipo}', valor={self.valor}, saldo={self.saldo})"
         )
 
     def __eq__(self, other):
         if not isinstance(other, Extrato):
             return False
-        return self.nome == other.nome and self.valor == other.valor and self.dt_lancamento == other.dt_lancamento
+        return self.nome == other.nome and self.valor == other.valor and self.dt_lancamento == other.dt_lancamento and self.saldo == other.saldo
 
     def __hash__(self):
-        return hash((self.nome, self.valor))
+        return hash((self.nome, self.valor, self.saldo))
