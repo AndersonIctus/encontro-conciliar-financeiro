@@ -80,6 +80,66 @@ def carregar_extratos(pasta_extratos: str) -> list[Extrato]:
                 )
     return extratos
 
+def carregar_cartao_extratos(pasta_extratos: str) -> list[Extrato]:
+    extratos = []
+    caminho_pasta = Path(pasta_extratos)
+    cabecalho_alvo = ["Data Lançamento", "Histórico", "Descrição", "Valor", "Saldo"]
+    registros_unicos: Set[str] = set()
+    
+    for arquivo in caminho_pasta.glob("*.csv"):
+        with open(arquivo, mode="r", encoding="utf-8") as f:
+            linhas = f.readlines()
+        
+            # Procurar a linha do cabeçalho
+            idx_cabecalho = -1
+            for idx, linha in enumerate(linhas):
+                if all(col in linha for col in cabecalho_alvo):
+                    idx_cabecalho = idx
+                    break
+
+            if idx_cabecalho == -1:
+                print(f"⚠️ Cabeçalho não encontrado no arquivo {arquivo.name}. Ignorando.")
+                continue
+
+            # Lê a partir do cabeçalho encontrado
+            dados_csv = linhas[idx_cabecalho:]
+            reader = csv.DictReader(dados_csv, delimiter=';')
+            index = 0
+            for linha in reader:
+                data_lancamento = linha.get("Data Lançamento", "").strip()
+                
+                nome_bruto = linha.get("Descrição", "").strip()
+                nome = re.sub(r'\d+', '', nome_bruto).strip()
+                
+                tipo = linha.get("Histórico", "").strip()
+                valor_str = linha.get("Valor", "0").replace(".", "").replace(",", ".").strip()
+                saldo_str = linha.get("Saldo", "0").replace(".", "").replace(",", ".").strip()
+
+                try:
+                    valor = float(valor_str)
+                except ValueError:
+                    print(f"❌ Valor inválido '{valor_str}' no arquivo {arquivo.name}, na linha {index + idx_cabecalho}. Usando 0.0.")
+                    valor = 0.0
+                    
+                try:
+                    saldo = float(saldo_str)
+                except ValueError:
+                    print(f"❌ Valor inválido '{saldo_str}' no arquivo {arquivo.name}, na linha {index + idx_cabecalho}. Usando 0.0.")
+                    saldo = 0.0
+                    
+                # Criar uma chave única para identificar duplicatas
+                chave_unica = f"{nome.lower()}|{data_lancamento}|{valor:.2f}|{saldo_str}"
+                if chave_unica in registros_unicos:
+                    continue  # Pula se já existe
+                registros_unicos.add(chave_unica)
+                
+                index = index + 1
+                extratos.append(
+                    Extrato(nome=nome, dt_lancamento=data_lancamento, tipo=tipo, valor=valor, saldo=saldo)
+                )
+    return extratos
+
+
 def carregar_encontristas(pasta_extratos: str) -> list[Encontrista]:
     extratos = []
     caminho_pasta = Path(pasta_extratos) / 'valores-encontristas.csv'
@@ -192,6 +252,7 @@ def imprimir_lista(lista: list, titulo: str):
 def main():
     planilha_utils = PlanilhaUtils()
     extratos = carregar_extratos("extrato-bancario")
+    cartao_extratos = carregar_cartao_extratos("extrato-cartao")
     encontristas = carregar_encontristas("extrato-encontrista")
     despesas = carregar_despesas("extrato-despesa")
     outros_valores = carregar_outros("extrato-outros")
@@ -201,12 +262,16 @@ def main():
     conciliador.conciliar_encontrista()
     conciliador.conciliar_despesas()
     conciliador.conciliar_outros()
+    conciliador.conciliar_cartao()
 
     # imprimir_lista(conciliador.get_encontreiros_conciliados(), 'ENCONTREIRO CONCILIADOS')
     imprimir_lista(conciliador.get_encontreiros_nao_conciliados(), 'ENCONTREIRO NÃO CONCILIADOS')
     
     # imprimir_lista(conciliador.get_encontrista_conciliados(), 'ENCONTRISTA CONCILIADOS')
     imprimir_lista(conciliador.get_encontrista_nao_conciliados(), 'ENCONTRISTA NÃO CONCILIADOS')
+    
+    # imprimir_lista(conciliador.get_cartao_conciliado(), 'CARTÃO CONCILIADOS')
+    imprimir_lista(conciliador.get_cartao_nao_conciliado(), 'CARTÃO NÃO CONCILIADOS')
 
     # imprimir_lista(conciliador.get_despesas_conciliados(), 'DESPESAS CONCILIADAS')
     imprimir_lista(conciliador.get_despesas_nao_conciliados(), 'DESPESAS NÃO CONCILIADAS')
@@ -216,6 +281,9 @@ def main():
     
     # imprimir_lista(conciliador.get_extratos_conciliados(), 'EXTRATO CONCILIADOS')
     imprimir_lista(conciliador.get_extratos_nao_conciliados(), 'EXTRATO NÃO CONCILIADOS')
+    
+    # imprimir_lista(conciliador.get_cartao_extrato_conciliado(), 'CARTAO EXTRATO CONCILIADOS')
+    imprimir_lista(conciliador.get_cartao_extrato_nao_conciliado(), 'CARTAO EXTRATO NÃO CONCILIADOS')
     
     imprimir_lista(conciliador.get_valores_em_dinheiro(), 'VALORES EM DINHEIRO')
     

@@ -26,12 +26,19 @@ class Conciliador:
         self.encontristas_conciliados = []
         self.encontrista_nao_conciliado = encontristas.copy()
         
+        self.cartao_conciliado = []
+        self.cartao_nao_conciliado = []
+        self.cartao_extrato_conciliados = []
+        self.cartao_extrato_nao_conciliados = []
+        
         self.outros_conciliados = []
         self.outros_nao_conciliado = outros_valores.copy()
         
         self.despesas_conciliados = []
         self.despesas_nao_conciliados = despesas.copy()
         self.valores_em_dinheiro = []
+        
+        self.data_limite = "11/05/2025"
         
 
     def conciliar_encontreiro(self):
@@ -45,7 +52,7 @@ class Conciliador:
             data_inscricao = str(encontreiro.get("Carimbo de data/hora", "")).strip()
             data_pgto = datetime.strptime(str(encontreiro.get("DATA DO PAGAMENTO", "")).strip(), '%d/%m/%Y')
             
-            data_corte = datetime.strptime('02/05/2025', '%d/%m/%Y')
+            data_corte = datetime.strptime(self.data_limite, '%d/%m/%Y')
             if data_pgto > data_corte:
                 self.encontreiros_nao_conciliados.remove(encontreiro)
                 continue
@@ -53,6 +60,17 @@ class Conciliador:
             if "dinheiro" in observacao.lower():
                 self.encontreiros_nao_conciliados.remove(encontreiro)
                 self.valores_em_dinheiro.append({
+                    "DATA": data_inscricao,
+                    "NOME": encontreiro.get("NOME COMPLETO", ""),
+                    "TIPO": "ENCONTREIRO",
+                    "VALOR PAGO": valor_pago,
+                    "DETALHES DO PAGAMENTO": observacao
+                })
+                continue
+            
+            if "cartão" in observacao.lower() or "cartao" in observacao.lower():
+                self.encontreiros_nao_conciliados.remove(encontreiro)
+                self.cartao_nao_conciliado.append({
                     "DATA": data_inscricao,
                     "NOME": encontreiro.get("NOME COMPLETO", ""),
                     "TIPO": "ENCONTREIRO",
@@ -108,7 +126,7 @@ class Conciliador:
         for encontrista in encontristas:
             data_pgto = datetime.strptime(encontrista.dt_lancamento, '%d/%m/%Y')
             
-            data_corte = datetime.strptime('02/05/2025', '%d/%m/%Y')
+            data_corte = datetime.strptime(self.data_limite, '%d/%m/%Y')
             if data_pgto > data_corte:
                 self.encontrista_nao_conciliado.remove(encontrista)
                 continue
@@ -116,6 +134,17 @@ class Conciliador:
             if encontrista.tipo == 'DINHEIRO':
                 self.encontrista_nao_conciliado.remove(encontrista)
                 self.valores_em_dinheiro.append({
+                    "DATA": encontrista.dt_lancamento,
+                    "NOME": encontrista.pagador,
+                    "TIPO": "ENCONTRISTA",
+                    "VALOR PAGO": encontrista.valor,
+                    "DETALHES DO PAGAMENTO": encontrista.observacao
+                })
+                continue
+            
+            if encontrista.tipo == 'CARTAO':
+                self.encontrista_nao_conciliado.remove(encontrista)
+                self.cartao_nao_conciliado.append({
                     "DATA": encontrista.dt_lancamento,
                     "NOME": encontrista.pagador,
                     "TIPO": "ENCONTRISTA",
@@ -162,13 +191,62 @@ class Conciliador:
         
         print('---------------- FINALIZANDO CONCILIAÇÃO - ENCONTRISTA ------------')
 
+    def conciliar_cartao(self):
+        cartao_para_conciliar = self.cartao_nao_conciliado.copy()
+        
+        for cartao in cartao_para_conciliar:
+            data_pgto = datetime.strptime(cartao.data, '%d/%m/%Y')
+            
+            data_corte = datetime.strptime(self.data_limite, '%d/%m/%Y')
+            if data_pgto > data_corte:
+                self.cartao_nao_conciliado.remove(cartao)
+                continue
+            
+            conciliado = False
+            for extrato in self.cartao_extrato_nao_conciliados:
+                data_extrato = datetime.strptime(extrato.dt_lancamento, '%d/%m/%Y')
+                
+                if data_pgto.year != data_extrato.year or data_pgto.month != data_extrato.month or data_pgto.day != data_extrato.day:
+                    continue
+                
+                if self._nomes_sao_similares(extrato.nome, cartao.nome) and float(extrato.valor) == cartao.valor:
+                    self.cartao_conciliado.append({
+                        "ID OUTRO": cartao.id,
+                        "DT INSCRIÇÃO": cartao.data,
+                        "DT EXTRATO": extrato.dt_lancamento,
+                        "NOME COMPLETO": extrato.nome,
+                        "VALOR PAGO": cartao.valor
+                    })
+                    extrato.valor_a_conciliar = extrato.valor_a_conciliar - cartao.valor
+
+                    # Remover dos não conciliados
+                    if cartao in self.cartao_nao_conciliado:
+                        self.cartao_nao_conciliado.remove(cartao)
+                        
+                    if extrato in self.cartao_extrato_nao_conciliados:
+                        if extrato.valor_a_conciliar == 0:
+                            self.cartao_extrato_conciliados.append(extrato)
+                            self.cartao_extrato_nao_conciliados.remove(extrato)
+                        else:
+                            print('Deve conciliar mais vezes ...')
+                            print(extrato)
+                    conciliado = True
+                    break
+            
+            if conciliado is False: 
+                print('Não foi possivel conciliar o cartão!!')
+                print('#########################')
+                print(cartao)
+        
+        print('---------------- FINALIZANDO CONCILIAÇÃO - CARTÃO ------------')
+        
     def conciliar_despesas(self):
         despesas = self.despesas_nao_conciliados.copy()
         
         for despesa in despesas:
             data_pgto = datetime.strptime(despesa.data, '%d/%m/%Y')
             
-            data_corte = datetime.strptime('02/05/2025', '%d/%m/%Y')
+            data_corte = datetime.strptime(self.data_limite, '%d/%m/%Y')
             if data_pgto > data_corte:
                 self.despesas_nao_conciliados.remove(despesa)
                 continue
@@ -228,7 +306,7 @@ class Conciliador:
         for outro_valor in outros_valores:
             data_pgto = datetime.strptime(outro_valor.data, '%d/%m/%Y')
             
-            data_corte = datetime.strptime('02/05/2025', '%d/%m/%Y')
+            data_corte = datetime.strptime(self.data_limite, '%d/%m/%Y')
             if data_pgto > data_corte:
                 self.outros_nao_conciliado.remove(outro_valor)
                 continue
@@ -302,6 +380,18 @@ class Conciliador:
     
     def get_extratos_conciliados(self):
         return self.extratos_conciliados
+    
+    def get_cartao_conciliado(self):
+        return self.cartao_conciliado
+    
+    def get_cartao_nao_conciliado(self):
+        return self.cartao_nao_conciliado
+    
+    def get_cartao_extrato_conciliado(self):
+        return self.cartao_extrato_conciliados
+    
+    def get_cartao_extrato_nao_conciliado(self):
+        return self.cartao_extrato_nao_conciliados
     
     def get_despesas_conciliados(self):
         return self.despesas_conciliados
