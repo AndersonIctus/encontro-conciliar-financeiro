@@ -11,6 +11,7 @@ from typing import List, Set
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..')))
 
 from application.src.conciliador import Conciliador
+from application.src.models.cartao_extrato import CartaoExtrato
 from application.src.models.extrato import Extrato
 from application.src.models.encontrista import Encontrista
 from application.src.models.despesa import Despesa
@@ -80,10 +81,10 @@ def carregar_extratos(pasta_extratos: str) -> list[Extrato]:
                 )
     return extratos
 
-def carregar_cartao_extratos(pasta_extratos: str) -> list[Extrato]:
+def carregar_cartao_extratos(pasta_extratos: str) -> list[CartaoExtrato]:
     extratos = []
     caminho_pasta = Path(pasta_extratos)
-    cabecalho_alvo = ["Data Lançamento", "Histórico", "Descrição", "Valor", "Saldo"]
+    cabecalho_alvo = ["Data da liberação", "Forma de pagamento", "Qtd. de vendas", "Código de recebimento", "Valor bruto", "Descontos", "Valor líquido"]
     registros_unicos: Set[str] = set()
     
     for arquivo in caminho_pasta.glob("*.csv"):
@@ -106,36 +107,41 @@ def carregar_cartao_extratos(pasta_extratos: str) -> list[Extrato]:
             reader = csv.DictReader(dados_csv, delimiter=';')
             index = 0
             for linha in reader:
-                data_lancamento = linha.get("Data Lançamento", "").strip()
+                data_liberacao = linha.get("Data da liberação", "").strip()
                 
-                nome_bruto = linha.get("Descrição", "").strip()
-                nome = re.sub(r'\d+', '', nome_bruto).strip()
+                cod_recebimento = linha.get("Código de recebimento", "").strip()
                 
-                tipo = linha.get("Histórico", "").strip()
-                valor_str = linha.get("Valor", "0").replace(".", "").replace(",", ".").strip()
-                saldo_str = linha.get("Saldo", "0").replace(".", "").replace(",", ".").strip()
+                valor_bruto_str = linha.get("Valor bruto", "0").replace(".", "").replace(",", ".").replace("R$", "").strip()
+                desconto_bruto_str = linha.get("Descontos", "0").replace(".", "").replace(",", ".").replace("R$", "").replace("-", "").strip()
+                valor_liquido_bruto_str = linha.get("Valor líquido", "0").replace(".", "").replace(",", ".").replace("R$", "").strip()
 
                 try:
-                    valor = float(valor_str)
+                    valor_bruto = float(valor_bruto_str)
                 except ValueError:
-                    print(f"❌ Valor inválido '{valor_str}' no arquivo {arquivo.name}, na linha {index + idx_cabecalho}. Usando 0.0.")
-                    valor = 0.0
+                    print(f"❌ Valor inválido '{valor_bruto_str}' no arquivo {arquivo.name}, na linha {index + idx_cabecalho}. Usando 0.0.")
+                    valor_bruto = 0.0
                     
                 try:
-                    saldo = float(saldo_str)
+                    desconto = float(desconto_bruto_str)
                 except ValueError:
-                    print(f"❌ Valor inválido '{saldo_str}' no arquivo {arquivo.name}, na linha {index + idx_cabecalho}. Usando 0.0.")
-                    saldo = 0.0
+                    print(f"❌ Desconto inválido '{desconto_bruto_str}' no arquivo {arquivo.name}, na linha {index + idx_cabecalho}. Usando 0.0.")
+                    desconto = 0.0
+                    
+                try:
+                    valor_liquido = float(valor_liquido_bruto_str)
+                except ValueError:
+                    print(f"❌ Valor Liquido inválido '{valor_liquido_bruto_str}' no arquivo {arquivo.name}, na linha {index + idx_cabecalho}. Usando 0.0.")
+                    valor_liquido = 0.0
                     
                 # Criar uma chave única para identificar duplicatas
-                chave_unica = f"{nome.lower()}|{data_lancamento}|{valor:.2f}|{saldo_str}"
-                if chave_unica in registros_unicos:
+                chave_unica = f"{cod_recebimento}|{valor_liquido}"
+                if chave_unica in registros_unicos or cod_recebimento == '':
                     continue  # Pula se já existe
                 registros_unicos.add(chave_unica)
                 
                 index = index + 1
                 extratos.append(
-                    Extrato(nome=nome, dt_lancamento=data_lancamento, tipo=tipo, valor=valor, saldo=saldo)
+                    CartaoExtrato(cod_recebimento=cod_recebimento, data_liberacao=data_liberacao, valor_bruto=valor_bruto, desconto=desconto, valor_liquido=valor_liquido)
                 )
     return extratos
 
@@ -257,7 +263,7 @@ def main():
     despesas = carregar_despesas("extrato-despesa")
     outros_valores = carregar_outros("extrato-outros")
 
-    conciliador = Conciliador(planilha_utils, extratos, encontristas, despesas, outros_valores)
+    conciliador = Conciliador(planilha_utils, extratos, cartao_extratos, encontristas, despesas, outros_valores)
     conciliador.conciliar_encontreiro()
     conciliador.conciliar_encontrista()
     conciliador.conciliar_despesas()
@@ -267,25 +273,25 @@ def main():
     # imprimir_lista(conciliador.get_encontreiros_conciliados(), 'ENCONTREIRO CONCILIADOS')
     imprimir_lista(conciliador.get_encontreiros_nao_conciliados(), 'ENCONTREIRO NÃO CONCILIADOS')
     
-    # imprimir_lista(conciliador.get_encontrista_conciliados(), 'ENCONTRISTA CONCILIADOS')
-    imprimir_lista(conciliador.get_encontrista_nao_conciliados(), 'ENCONTRISTA NÃO CONCILIADOS')
+    # # imprimir_lista(conciliador.get_encontrista_conciliados(), 'ENCONTRISTA CONCILIADOS')
+    # imprimir_lista(conciliador.get_encontrista_nao_conciliados(), 'ENCONTRISTA NÃO CONCILIADOS')
     
-    # imprimir_lista(conciliador.get_cartao_conciliado(), 'CARTÃO CONCILIADOS')
-    imprimir_lista(conciliador.get_cartao_nao_conciliado(), 'CARTÃO NÃO CONCILIADOS')
+    # # imprimir_lista(conciliador.get_cartao_conciliado(), 'CARTÃO CONCILIADOS')
+    # imprimir_lista(conciliador.get_cartao_nao_conciliado(), 'CARTÃO NÃO CONCILIADOS')
 
-    # imprimir_lista(conciliador.get_despesas_conciliados(), 'DESPESAS CONCILIADAS')
-    imprimir_lista(conciliador.get_despesas_nao_conciliados(), 'DESPESAS NÃO CONCILIADAS')
+    # # imprimir_lista(conciliador.get_despesas_conciliados(), 'DESPESAS CONCILIADAS')
+    # imprimir_lista(conciliador.get_despesas_nao_conciliados(), 'DESPESAS NÃO CONCILIADAS')
     
-    # imprimir_lista(conciliador.get_outros_conciliados(), 'OUTROS CONCILIADAS')
-    imprimir_lista(conciliador.get_outros_nao_conciliados(), 'OUTROS NÃO CONCILIADAS')
+    # # imprimir_lista(conciliador.get_outros_conciliados(), 'OUTROS CONCILIADAS')
+    # imprimir_lista(conciliador.get_outros_nao_conciliados(), 'OUTROS NÃO CONCILIADAS')
     
-    # imprimir_lista(conciliador.get_extratos_conciliados(), 'EXTRATO CONCILIADOS')
-    imprimir_lista(conciliador.get_extratos_nao_conciliados(), 'EXTRATO NÃO CONCILIADOS')
+    # # imprimir_lista(conciliador.get_extratos_conciliados(), 'EXTRATO CONCILIADOS')
+    # imprimir_lista(conciliador.get_extratos_nao_conciliados(), 'EXTRATO NÃO CONCILIADOS')
     
-    # imprimir_lista(conciliador.get_cartao_extrato_conciliado(), 'CARTAO EXTRATO CONCILIADOS')
-    imprimir_lista(conciliador.get_cartao_extrato_nao_conciliado(), 'CARTAO EXTRATO NÃO CONCILIADOS')
+    # # imprimir_lista(conciliador.get_cartao_extrato_conciliado(), 'CARTAO EXTRATO CONCILIADOS')
+    # imprimir_lista(conciliador.get_cartao_extrato_nao_conciliado(), 'CARTAO EXTRATO NÃO CONCILIADOS')
     
-    imprimir_lista(conciliador.get_valores_em_dinheiro(), 'VALORES EM DINHEIRO')
+    # imprimir_lista(conciliador.get_valores_em_dinheiro(), 'VALORES EM DINHEIRO')
     
     print("--------------------             ------------------")
 

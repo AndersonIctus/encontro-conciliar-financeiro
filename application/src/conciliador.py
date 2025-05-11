@@ -2,6 +2,7 @@ from operator import eq
 from typing import List
 import unicodedata
 
+from application.src.models.cartao_extrato import CartaoExtrato
 from application.src.models.extrato import Extrato
 from application.src.models.encontrista import Encontrista
 from application.src.models.despesa import Despesa
@@ -14,6 +15,7 @@ class Conciliador:
     def __init__(self, 
                  planilha_utils: PlanilhaUtils, 
                  extratos: List[Extrato], 
+                 cartao_extratos: List[CartaoExtrato], 
                  encontristas: list[Encontrista], 
                  despesas: list[Despesa], 
                  outros_valores: list[OutroValor]
@@ -29,7 +31,7 @@ class Conciliador:
         self.cartao_conciliado = []
         self.cartao_nao_conciliado = []
         self.cartao_extrato_conciliados = []
-        self.cartao_extrato_nao_conciliados = []
+        self.cartao_extrato_nao_conciliados = cartao_extratos.copy()
         
         self.outros_conciliados = []
         self.outros_nao_conciliado = outros_valores.copy()
@@ -38,7 +40,7 @@ class Conciliador:
         self.despesas_nao_conciliados = despesas.copy()
         self.valores_em_dinheiro = []
         
-        self.data_limite = "11/05/2025"
+        self.data_limite = "10/05/2025"
         
 
     def conciliar_encontreiro(self):
@@ -64,7 +66,7 @@ class Conciliador:
                     "NOME": encontreiro.get("NOME COMPLETO", ""),
                     "TIPO": "ENCONTREIRO",
                     "VALOR PAGO": valor_pago,
-                    "DETALHES DO PAGAMENTO": observacao
+                    "OBSERVACOES": observacao
                 })
                 continue
             
@@ -72,10 +74,10 @@ class Conciliador:
                 self.encontreiros_nao_conciliados.remove(encontreiro)
                 self.cartao_nao_conciliado.append({
                     "DATA": data_inscricao,
-                    "NOME": encontreiro.get("NOME COMPLETO", ""),
+                    "NOME PAGADOR": nome_pagador,
                     "TIPO": "ENCONTREIRO",
                     "VALOR PAGO": valor_pago,
-                    "DETALHES DO PAGAMENTO": observacao
+                    "OBSERVACOES": observacao
                 })
                 continue
             
@@ -93,10 +95,10 @@ class Conciliador:
                         "NOME COMPLETO": encontreiro.get("NOME COMPLETO", ""),
                         "NOME DO PAGADOR": nome_pagador,
                         "VALOR PAGO": valor_pago,
-                        "DETALHES DO PAGAMENTO": encontreiro.get("DETALHES DO PAGAMENTO", "")
+                        "OBSERVACOES": observacao
                     })
-                    if(extrato.valor == 30):
-                        extrato.valor_a_conciliar = extrato.valor_a_conciliar - 30 # Pagamento de inscrição somente com a Blusa
+                    if(extrato.valor < 90):
+                        extrato.valor_a_conciliar = extrato.valor_a_conciliar - extrato.valor # Outros pagamentos menores com desconto em inscrição
                     else:
                         extrato.valor_a_conciliar = extrato.valor_a_conciliar - 90
 
@@ -134,22 +136,22 @@ class Conciliador:
             if encontrista.tipo == 'DINHEIRO':
                 self.encontrista_nao_conciliado.remove(encontrista)
                 self.valores_em_dinheiro.append({
-                    "DATA": encontrista.dt_lancamento,
+                    "DATA": encontrista.dt_lancamento + ' 00:00:00',
                     "NOME": encontrista.pagador,
                     "TIPO": "ENCONTRISTA",
                     "VALOR PAGO": encontrista.valor,
-                    "DETALHES DO PAGAMENTO": encontrista.observacao
+                    "OBSERVACOES": encontrista.observacao
                 })
                 continue
             
             if encontrista.tipo == 'CARTAO':
                 self.encontrista_nao_conciliado.remove(encontrista)
                 self.cartao_nao_conciliado.append({
-                    "DATA": encontrista.dt_lancamento,
-                    "NOME": encontrista.pagador,
+                    "DATA": encontrista.dt_lancamento + ' 00:00:00',
+                    "NOME PAGADOR": encontrista.pagador,
                     "TIPO": "ENCONTRISTA",
                     "VALOR PAGO": encontrista.valor,
-                    "DETALHES DO PAGAMENTO": encontrista.observacao
+                    "OBSERVACOES": encontrista.observacao
                 })
                 continue
             
@@ -166,7 +168,8 @@ class Conciliador:
                         "DT INSCRIÇÃO": encontrista.dt_lancamento,
                         "DT EXTRATO": extrato.dt_lancamento,
                         "NOME COMPLETO": extrato.nome,
-                        "VALOR PAGO": encontrista.valor
+                        "VALOR PAGO": encontrista.valor,
+                        "OBSERVACOES": encontrista.observacao
                     })
                     extrato.valor_a_conciliar = extrato.valor_a_conciliar - encontrista.valor
 
@@ -195,7 +198,11 @@ class Conciliador:
         cartao_para_conciliar = self.cartao_nao_conciliado.copy()
         
         for cartao in cartao_para_conciliar:
-            data_pgto = datetime.strptime(cartao.data, '%d/%m/%Y')
+            nome_pagador = str(cartao["NOME PAGADOR"]).strip()
+            valor_pago = float(str(cartao["VALOR PAGO"]).strip())
+            observacao = str(cartao["OBSERVACOES"]).strip()
+            tipo = str(cartao["TIPO"]).strip()
+            data_pgto = datetime.strptime(str(cartao["DATA"]).strip(), '%d/%m/%Y %H:%M:%S')
             
             data_corte = datetime.strptime(self.data_limite, '%d/%m/%Y')
             if data_pgto > data_corte:
@@ -204,20 +211,27 @@ class Conciliador:
             
             conciliado = False
             for extrato in self.cartao_extrato_nao_conciliados:
-                data_extrato = datetime.strptime(extrato.dt_lancamento, '%d/%m/%Y')
+                data_extrato = datetime.strptime(extrato.data_liberacao, '%d/%m/%Y')
                 
                 if data_pgto.year != data_extrato.year or data_pgto.month != data_extrato.month or data_pgto.day != data_extrato.day:
                     continue
                 
-                if self._nomes_sao_similares(extrato.nome, cartao.nome) and float(extrato.valor) == cartao.valor:
+                if float(extrato.valor_bruto) == valor_pago:
                     self.cartao_conciliado.append({
-                        "ID OUTRO": cartao.id,
-                        "DT INSCRIÇÃO": cartao.data,
-                        "DT EXTRATO": extrato.dt_lancamento,
-                        "NOME COMPLETO": extrato.nome,
-                        "VALOR PAGO": cartao.valor
+                        "ID CARTAO": extrato.cod_recebimento,
+                        "DT INSCRIÇÃO": data_pgto,
+                        "DT EXTRATO": extrato.data_liberacao,
+                        "NOME COMPLETO": nome_pagador,
+                        "VALOR PAGO": valor_pago,
+                        "OBSERVACOES": observacao
                     })
-                    extrato.valor_a_conciliar = extrato.valor_a_conciliar - cartao.valor
+                    if tipo == 'ENCONTREIRO':
+                        valor_a_conciliar = 90
+                        if valor_pago < 90:
+                            valor_a_conciliar = valor_pago
+                        extrato.valor_a_conciliar = extrato.valor_a_conciliar - valor_a_conciliar
+                    else:
+                        extrato.valor_a_conciliar = extrato.valor_a_conciliar - valor_pago
 
                     # Remover dos não conciliados
                     if cartao in self.cartao_nao_conciliado:
@@ -258,7 +272,7 @@ class Conciliador:
                     "NOME": despesa.descricao,
                     "TIPO": "DESPESA",
                     "VALOR PAGO": despesa.valor,
-                    "DETALHES DO PAGAMENTO": despesa.observacao
+                    "OBSERVACOES": despesa.observacao
                 })
                 continue
             
@@ -275,7 +289,8 @@ class Conciliador:
                         "DT INSCRIÇÃO": despesa.data,
                         "DT EXTRATO": extrato.dt_lancamento,
                         "NOME COMPLETO": extrato.nome,
-                        "VALOR PAGO": despesa.valor
+                        "VALOR PAGO": despesa.valor,
+                        "OBSERVACOES": despesa.observacao
                     })
                     extrato.valor_a_conciliar = extrato.valor_a_conciliar + despesa.valor
 
@@ -318,7 +333,7 @@ class Conciliador:
                     "NOME": outro_valor.nome,
                     "TIPO": "OFERTA",
                     "VALOR PAGO": outro_valor.valor,
-                    "DETALHES DO PAGAMENTO": outro_valor.observacao
+                    "OBSERVACOES": outro_valor.observacao
                 })
                 continue
             
@@ -335,7 +350,8 @@ class Conciliador:
                         "DT INSCRIÇÃO": outro_valor.data,
                         "DT EXTRATO": extrato.dt_lancamento,
                         "NOME COMPLETO": extrato.nome,
-                        "VALOR PAGO": outro_valor.valor
+                        "VALOR PAGO": outro_valor.valor,
+                        "OBSERVACOES": outro_valor.observacao
                     })
                     extrato.valor_a_conciliar = extrato.valor_a_conciliar - outro_valor.valor
 
