@@ -2,6 +2,8 @@ from operator import eq
 from typing import List
 import unicodedata
 
+from decimal import Decimal, ROUND_HALF_UP
+
 from application.src.models.cartao_extrato import CartaoExtrato
 from application.src.models.extrato import Extrato
 from application.src.models.encontrista import Encontrista
@@ -40,7 +42,7 @@ class Conciliador:
         self.despesas_nao_conciliados = despesas.copy()
         self.valores_em_dinheiro = []
         
-        self.data_limite = "10/05/2025"
+        self.data_limite = "12/05/2025"
         
 
     def conciliar_encontreiro(self):
@@ -98,7 +100,10 @@ class Conciliador:
                         "OBSERVACOES": observacao
                     })
                     if(extrato.valor < 90):
-                        extrato.valor_a_conciliar = extrato.valor_a_conciliar - extrato.valor # Outros pagamentos menores com desconto em inscrição
+                        if "metade" in observacao.lower():
+                            extrato.valor_a_conciliar = extrato.valor_a_conciliar - extrato.valor/2 # pagamentos menores, só com metade
+                        else:
+                            extrato.valor_a_conciliar = extrato.valor_a_conciliar - extrato.valor # Outros pagamentos menores com desconto em inscrição
                     else:
                         extrato.valor_a_conciliar = extrato.valor_a_conciliar - 90
 
@@ -162,7 +167,7 @@ class Conciliador:
                 if data_pgto.year != data_extrato.year or data_pgto.month != data_extrato.month or data_pgto.day != data_extrato.day:
                     continue
                 
-                if self._nomes_sao_similares(extrato.nome, encontrista.pagador) and extrato.valor == encontrista.valor:
+                if self._nomes_sao_similares(extrato.nome, encontrista.pagador) and (extrato.valor == encontrista.valor or extrato.valor_a_conciliar == encontrista.valor):
                     self.encontristas_conciliados.append({
                         "ID FICHA": encontrista.id,
                         "DT INSCRIÇÃO": encontrista.dt_lancamento,
@@ -283,7 +288,13 @@ class Conciliador:
                 if data_pgto.year != data_extrato.year or data_pgto.month != data_extrato.month or data_pgto.day != data_extrato.day:
                     continue
                 
-                if self._nomes_sao_similares(extrato.nome, despesa.descricao) and (float(extrato.valor) * -1) == despesa.valor:
+                decimal_value = Decimal(extrato.valor * -1).quantize(Decimal("0.01"), rounding=ROUND_HALF_UP)
+                decimal_despesa = Decimal(despesa.valor).quantize(Decimal("0.01"), rounding=ROUND_HALF_UP)
+                decimal_equal = decimal_value.compare(decimal_despesa)
+                if (
+                    self._nomes_sao_similares(extrato.nome, despesa.descricao) 
+                    and decimal_equal == Decimal(0)
+                ):
                     self.despesas_conciliados.append({
                         "ID DESPESA": despesa.id,
                         "DT INSCRIÇÃO": despesa.data,
@@ -442,7 +453,9 @@ class Conciliador:
             return False
 
         nome_principal_igual = partes_extrato[0] == partes_pagador[0]
-        sobrenome_em_comum = any(sobrenome in partes_pagador[1:] for sobrenome in partes_extrato[1:])
+        sobrenome_em_comum = True
+        if len(partes_pagador) > 1:
+            sobrenome_em_comum = any(sobrenome in partes_pagador[1:] for sobrenome in partes_extrato[1:])
 
         return nome_principal_igual and sobrenome_em_comum
     

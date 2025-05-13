@@ -51,7 +51,7 @@ def carregar_extratos(pasta_extratos: str) -> list[Extrato]:
                 data_lancamento = linha.get("Data Lançamento", "").strip()
                 
                 nome_bruto = linha.get("Descrição", "").strip()
-                nome = re.sub(r'\d+', '', nome_bruto).strip()
+                nome = re.sub(r'\d+|[.]+', '', nome_bruto).strip()
                 
                 tipo = linha.get("Histórico", "").strip()
                 valor_str = linha.get("Valor", "0").replace(".", "").replace(",", ".").strip()
@@ -144,7 +144,6 @@ def carregar_cartao_extratos(pasta_extratos: str) -> list[CartaoExtrato]:
                     CartaoExtrato(cod_recebimento=cod_recebimento, data_liberacao=data_liberacao, valor_bruto=valor_bruto, desconto=desconto, valor_liquido=valor_liquido)
                 )
     return extratos
-
 
 def carregar_encontristas(pasta_extratos: str) -> list[Encontrista]:
     extratos = []
@@ -271,7 +270,7 @@ def main():
     conciliador.conciliar_cartao()
 
     # imprimir_lista(conciliador.get_encontreiros_conciliados(), 'ENCONTREIRO CONCILIADOS')
-    imprimir_lista(conciliador.get_encontreiros_nao_conciliados(), 'ENCONTREIRO NÃO CONCILIADOS')
+    # imprimir_lista(conciliador.get_encontreiros_nao_conciliados(), 'ENCONTREIRO NÃO CONCILIADOS')
     
     # # imprimir_lista(conciliador.get_encontrista_conciliados(), 'ENCONTRISTA CONCILIADOS')
     # imprimir_lista(conciliador.get_encontrista_nao_conciliados(), 'ENCONTRISTA NÃO CONCILIADOS')
@@ -280,13 +279,13 @@ def main():
     # imprimir_lista(conciliador.get_cartao_nao_conciliado(), 'CARTÃO NÃO CONCILIADOS')
 
     # # imprimir_lista(conciliador.get_despesas_conciliados(), 'DESPESAS CONCILIADAS')
-    # imprimir_lista(conciliador.get_despesas_nao_conciliados(), 'DESPESAS NÃO CONCILIADAS')
+    imprimir_lista(conciliador.get_despesas_nao_conciliados(), 'DESPESAS NÃO CONCILIADAS')
     
     # # imprimir_lista(conciliador.get_outros_conciliados(), 'OUTROS CONCILIADAS')
     # imprimir_lista(conciliador.get_outros_nao_conciliados(), 'OUTROS NÃO CONCILIADAS')
     
     # # imprimir_lista(conciliador.get_extratos_conciliados(), 'EXTRATO CONCILIADOS')
-    # imprimir_lista(conciliador.get_extratos_nao_conciliados(), 'EXTRATO NÃO CONCILIADOS')
+    imprimir_lista(conciliador.get_extratos_nao_conciliados(), 'EXTRATO NÃO CONCILIADOS')
     
     # # imprimir_lista(conciliador.get_cartao_extrato_conciliado(), 'CARTAO EXTRATO CONCILIADOS')
     # imprimir_lista(conciliador.get_cartao_extrato_nao_conciliado(), 'CARTAO EXTRATO NÃO CONCILIADOS')
