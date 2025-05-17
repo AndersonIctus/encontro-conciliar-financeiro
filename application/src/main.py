@@ -243,7 +243,7 @@ def carregar_outros(pasta_extratos: str) -> list[OutroValor]:
                 
             index = index + 1
             lista_retorno.append(
-                OutroValor(id=id_, nome=nome, data=data, tipo=tipo, formaPgto=formaPgto, valor=valor, observacao=observacao)
+                OutroValor(id=id_, nome=nome, data=data, tipo=tipo, forma_pgto=formaPgto, valor=valor, observacao=observacao)
             )
     
     lista_retorno.sort(key=lambda x: datetime.strptime(x.data, "%d/%m/%Y"))
