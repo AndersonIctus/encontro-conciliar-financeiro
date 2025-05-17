@@ -9,6 +9,7 @@ from application.src.models.extrato import Extrato
 from application.src.models.encontrista import Encontrista
 from application.src.models.despesa import Despesa
 from application.src.models.outro_valor import OutroValor
+from application.src.models.dado_conciliado import DadoConciliado
 from application.src.planilha_utils import PlanilhaUtils
 from datetime import datetime
 
@@ -25,24 +26,24 @@ class Conciliador:
         self.planilha_utils = planilha_utils
         self.extratos_conciliados = []
         self.extratos_nao_conciliados = extratos.copy()
-        self.encontreiros_conciliados = []
+        self.encontreiros_conciliados: list[DadoConciliado] = []
         self.encontreiros_nao_conciliados = []
-        self.encontristas_conciliados = []
+        self.encontristas_conciliados: list[DadoConciliado] = []
         self.encontrista_nao_conciliado = encontristas.copy()
         
-        self.cartao_conciliado = []
+        self.cartao_conciliado: list[DadoConciliado] = []
         self.cartao_nao_conciliado = []
         self.cartao_extrato_conciliados = []
         self.cartao_extrato_nao_conciliados = cartao_extratos.copy()
         
-        self.outros_conciliados = []
+        self.outros_conciliados: list[DadoConciliado] = []
         self.outros_nao_conciliado = outros_valores.copy()
         
-        self.despesas_conciliados = []
+        self.despesas_conciliados: list[DadoConciliado] = []
         self.despesas_nao_conciliados = despesas.copy()
-        self.valores_em_dinheiro = []
+        self.valores_em_dinheiro: list[DadoConciliado] = []
         
-        self.data_limite = "12/05/2025"
+        self.data_limite = "16/05/2025"
         
 
     def conciliar_encontreiro(self):
@@ -63,19 +64,19 @@ class Conciliador:
             
             if "dinheiro" in observacao.lower():
                 self.encontreiros_nao_conciliados.remove(encontreiro)
-                self.valores_em_dinheiro.append({
-                    "DATA": data_inscricao,
-                    "NOME": encontreiro.get("NOME COMPLETO", ""),
-                    "TIPO": "ENCONTREIRO",
-                    "VALOR PAGO": valor_pago,
-                    "OBSERVACOES": observacao
-                })
+                dado_conciliado = DadoConciliado(
+                    data_pgto, encontreiro.get("NOME COMPLETO", ""), 'ENTRADA', 'ENCONTREIRO', 'DINHEIRO', valor_pago,
+                    { "observacao": observacao, "nome_pagador": nome_pagador,  "data_incricao": data_inscricao }
+                )
+                self.valores_em_dinheiro.append(dado_conciliado)
                 continue
             
             if "cartão" in observacao.lower() or "cartao" in observacao.lower():
                 self.encontreiros_nao_conciliados.remove(encontreiro)
                 self.cartao_nao_conciliado.append({
                     "DATA": data_inscricao,
+                    "DATA PGTO": data_pgto,
+                    "NOME": encontreiro.get("NOME COMPLETO", ""),
                     "NOME PAGADOR": nome_pagador,
                     "TIPO": "ENCONTREIRO",
                     "VALOR PAGO": valor_pago,
@@ -105,7 +106,10 @@ class Conciliador:
                         else:
                             extrato.valor_a_conciliar = extrato.valor_a_conciliar - extrato.valor # Outros pagamentos menores com desconto em inscrição
                     else:
-                        extrato.valor_a_conciliar = extrato.valor_a_conciliar - 90
+                        if "metade" in observacao.lower():
+                            extrato.valor_a_conciliar = extrato.valor_a_conciliar - extrato.valor/2 # pagamentos menores, só com metade
+                        else:
+                            extrato.valor_a_conciliar = extrato.valor_a_conciliar - 90
 
                     # Remover dos não conciliados
                     if encontreiro in self.encontreiros_nao_conciliados:

@@ -7,6 +7,7 @@ import re
 
 from pathlib import Path
 from typing import List, Set
+from datetime import datetime
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..')))
 
@@ -79,6 +80,9 @@ def carregar_extratos(pasta_extratos: str) -> list[Extrato]:
                 extratos.append(
                     Extrato(nome=nome, dt_lancamento=data_lancamento, tipo=tipo, valor=valor, saldo=saldo)
                 )
+    # Ordenar por data de lançamento (do mais antigo para o mais recente)
+    extratos.sort(key=lambda x: datetime.strptime(x.dt_lancamento, "%d/%m/%Y"))
+    
     return extratos
 
 def carregar_cartao_extratos(pasta_extratos: str) -> list[CartaoExtrato]:
@@ -143,6 +147,8 @@ def carregar_cartao_extratos(pasta_extratos: str) -> list[CartaoExtrato]:
                 extratos.append(
                     CartaoExtrato(cod_recebimento=cod_recebimento, data_liberacao=data_liberacao, valor_bruto=valor_bruto, desconto=desconto, valor_liquido=valor_liquido)
                 )
+    
+    extratos.sort(key=lambda x: datetime.strptime(x.data_liberacao, "%d/%m/%Y"))
     return extratos
 
 def carregar_encontristas(pasta_extratos: str) -> list[Encontrista]:
@@ -175,6 +181,7 @@ def carregar_encontristas(pasta_extratos: str) -> list[Encontrista]:
                 Encontrista(id=id_, pagador=pagador, dt_lancamento=data, tipo=tipo, valor=valor, observacao=observacao)
             )
     
+    extratos.sort(key=lambda x: datetime.strptime(x.dt_lancamento, "%d/%m/%Y"))
     return extratos
 
 def carregar_despesas(pasta_extratos: str) -> list[Despesa]:
@@ -206,6 +213,7 @@ def carregar_despesas(pasta_extratos: str) -> list[Despesa]:
                 Despesa(id=id_, descricao=descricao, data=data, tipo=tipo, valor=valor, observacao=observacao)
             )
     
+    lista_retorno.sort(key=lambda x: datetime.strptime(x.data, "%d/%m/%Y"))
     return lista_retorno
 
 def carregar_outros(pasta_extratos: str) -> list[OutroValor]:
@@ -238,6 +246,7 @@ def carregar_outros(pasta_extratos: str) -> list[OutroValor]:
                 OutroValor(id=id_, nome=nome, data=data, tipo=tipo, formaPgto=formaPgto, valor=valor, observacao=observacao)
             )
     
+    lista_retorno.sort(key=lambda x: datetime.strptime(x.data, "%d/%m/%Y"))
     return lista_retorno
 
 
@@ -270,7 +279,7 @@ def main():
     conciliador.conciliar_cartao()
 
     # imprimir_lista(conciliador.get_encontreiros_conciliados(), 'ENCONTREIRO CONCILIADOS')
-    # imprimir_lista(conciliador.get_encontreiros_nao_conciliados(), 'ENCONTREIRO NÃO CONCILIADOS')
+    imprimir_lista(conciliador.get_encontreiros_nao_conciliados(), 'ENCONTREIRO NÃO CONCILIADOS')
     
     # # imprimir_lista(conciliador.get_encontrista_conciliados(), 'ENCONTRISTA CONCILIADOS')
     # imprimir_lista(conciliador.get_encontrista_nao_conciliados(), 'ENCONTRISTA NÃO CONCILIADOS')
@@ -279,13 +288,13 @@ def main():
     # imprimir_lista(conciliador.get_cartao_nao_conciliado(), 'CARTÃO NÃO CONCILIADOS')
 
     # # imprimir_lista(conciliador.get_despesas_conciliados(), 'DESPESAS CONCILIADAS')
-    imprimir_lista(conciliador.get_despesas_nao_conciliados(), 'DESPESAS NÃO CONCILIADAS')
+    # imprimir_lista(conciliador.get_despesas_nao_conciliados(), 'DESPESAS NÃO CONCILIADAS')
     
     # # imprimir_lista(conciliador.get_outros_conciliados(), 'OUTROS CONCILIADAS')
     # imprimir_lista(conciliador.get_outros_nao_conciliados(), 'OUTROS NÃO CONCILIADAS')
     
     # # imprimir_lista(conciliador.get_extratos_conciliados(), 'EXTRATO CONCILIADOS')
-    imprimir_lista(conciliador.get_extratos_nao_conciliados(), 'EXTRATO NÃO CONCILIADOS')
+    # imprimir_lista(conciliador.get_extratos_nao_conciliados(), 'EXTRATO NÃO CONCILIADOS')
     
     # # imprimir_lista(conciliador.get_cartao_extrato_conciliado(), 'CARTAO EXTRATO CONCILIADOS')
     # imprimir_lista(conciliador.get_cartao_extrato_nao_conciliado(), 'CARTAO EXTRATO NÃO CONCILIADOS')
