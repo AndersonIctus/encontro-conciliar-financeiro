@@ -54,6 +54,11 @@ class Conciliador:
 
         for encontreiro in linhas_planilha_encontreiro:
             nome_pagador = str(encontreiro.get("NOME DO PAGADOR:", "")).strip()
+            
+            if nome_pagador == 'CANCELADO':
+                self.encontreiros_nao_conciliados.remove(encontreiro)
+                continue
+                
             valor_pago_att = float(str(encontreiro.get("VALOR PAGO:", "")).replace(",", ".").replace('R$', '').strip())
             if valor_pago_att == 0:
                 valor_pago = 0
