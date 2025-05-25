@@ -1,23 +1,50 @@
 ID;Data Lançamento;Descrição;Tipo;Valor;Observacao
-1;12/04/2025;Antonio Alex Araujo Dino;PIX;1260;Central Lan Informática - Referente a Entrega de 55 Albuns EJC e 40 Kit Blocos com Caneta
-2;15/04/2025;Luis Gustavo Navega De Barros;PIX;139;Limpalar - Materiais de Limpeza (O recibo está com valor errado de 134.50, por conta disso fomos ressarcidos em R$ 4,50 em espécie)
-3;12/03/2025;Soraya Siqueira Da Costa Dourado;PIX;211.44;Ressarcimento de Compras Cerimonial - Comercial Dantas
-4;06/02/2025;Soraya Siqueira Da Costa Dourado;PIX;374.50;Ressarcimento - Jantar com Líderes da Trandinha
-5;02/05/2025;Soraya Siqueira Da Costa Dourado;PIX;30;Ressarcimento - Raimundo Nonato de Araújo Armarinho - Plastificação Material da Secretaria
-6;07/04/2025;Assai Atacadista;PIX;23.90;Folhas A4 apra Secretaria
-7;07/04/2025;Sebastiao Duarte Batista;PIX;33.15;Pasta em L Transparente - Pastas para Líderes e Cordenadores
-8;07/04/2025;Francisca Leda Duarte;PIX;11.70;Pasta em L Transparente
-9;10/04/2025;Antonia Lilia Carolina Da Silva Fiuza;PIX;153;Ressarcimento - Aventais do Cafezinho
-10;31/03/2025;Ronaldo Pereira Da Silva;PIX;1;Teste de Conexão
-11;17/03/2025;Lidia Raquel Da Silva Lima;PIX;250;Doação para a Escola
-12;30/04/2025;Lidia Raquel Da Silva Lima;PIX;57.20;Doação para a Escola
-13;26/04/2025;Antonio Alex Araujo Dino;PIX;700;Pagamento de Material da Livraria/Secretaria
-14;15/04/2025;Posto Bela Vista;PIX;100;Ajuda de Custo - Combustível
-15;05/05/2025;Antonio Geilson Rodrigues Marques;PIX;8;Estacionamento
-16;05/05/2025;Mega Midia;PIX;184;???
-17;05/05/2025;Francisca Joice Da Silva Costa;PIX;3000;Primeira Parcela das Camisas
-18;06/05/2025;Leila Araujo De Lima;PIX;195;????
-19;07/05/2025;Francilene Nobre Dos Santos Me;PIX;1750;???? (pgto de decoração parcela 1??)
-20;08/05/2025;Posto Marajo;PIX;150;Ajuda de custo GASOLINA
-21;09/05/2025;Amazoncombr;PIX;202.02;
-22;09/05/2025;Amazoncombr;PIX;120;
+1;06/02/2025;Soraya Siqueira Da Costa Dourado;PIX;374.50;Ressarcimento - Jantar com Líderes da Trandinha
+2;12/03/2025;Soraya Siqueira Da Costa Dourado;PIX;211.44;Ressarcimento de Compras Cerimonial - Comercial Dantas
+3;17/03/2025;Lidia Raquel Da Silva Lima;PIX;250;Doação para a Escola
+4;31/03/2025;Ronaldo Pereira Da Silva;PIX;1;Teste de Conexão
+5;07/04/2025;Assai Atacadista;PIX;23.90;Folhas A4 apra Secretaria
+6;07/04/2025;Sebastiao Duarte Batista;PIX;33.15;Pasta em L Transparente - Pastas para Líderes e Cordenadores
+7;07/04/2025;Francisca Leda Duarte;PIX;11.70;Pasta em L Transparente
+8;10/04/2025;Antonia Lilia Carolina Da Silva Fiuza;PIX;153;Ressarcimento - Aventais do Cafezinho
+9;12/04/2025;Antonio Alex Araujo Dino;PIX;1260;Central Lan Informática - Referente a Entrega de 55 Albuns EJC e 40 Kit Blocos com Caneta
+10;15/04/2025;Luis Gustavo Navega De Barros;PIX;139;Limpalar - Materiais de Limpeza (O recibo está com valor errado de 134.50, por conta disso fomos ressarcidos em R$ 4,50 em espécie)
+11;15/04/2025;Posto Bela Vista;PIX;100;Ajuda de Custo - Combustível
+12;26/04/2025;Antonio Alex Araujo Dino;PIX;700;Pagamento de Material da Livraria/Secretaria
+13;30/04/2025;Lidia Raquel Da Silva Lima;PIX;57.20;Doação para a Escola
+14;05/05/2025;Antonio Geilson Rodrigues Marques;PIX;8;Estacionamento
+15;05/05/2025;Mega Midia;PIX;184;???
+16;05/05/2025;Francisca Joice Da Silva Costa;PIX;3000;Primeira Parcela das Camisas
+17;06/05/2025;Leila Araujo De Lima;PIX;195;????
+18;07/05/2025;Francilene Nobre Dos Santos Me;PIX;1750;???? (pgto de decoração parcela 1??)
+19;08/05/2025;Posto Marajo;PIX;150;Ajuda de custo GASOLINA
+20;09/05/2025;Amazoncombr;PIX;202.02;
+21;09/05/2025;Amazoncombr;PIX;120;
+22;14/05/2025;Maria Vera Lucia Silva De Oliveira;PIX;210;
+23;14/05/2025;Antonia Lilia Carolina Da Silva Fiuza;PIX;53.8;
+24;14/05/2025;Fernando Cesar Rocha Lira Junior;PIX;338.2;
+25;16/05/2025;Bianca Rossane Alencar Queiroz;PIX;51.99;
+26;17/05/2025;Antonio Geilson Rodrigues Marques;PIX;40.0;
+27;17/05/2025;Maria Do Rosario Fernandes Sousa;PIX;12;
+28;17/05/2025;Mundo E Cia;PIX;200;
+29;17/05/2025;Barbara Augusta Castro De Sousa;PIX;30;
+30;17/05/2025;Pedro Ryan Alves Soares;PIX;19;
+31;17/05/2025;Comercial Dantas;PIX;566.61;
+32;17/05/2025;Posto Rm Barra;PIX;100;
+33;19/05/2025;Antonia Regia Brandao Pereira;PIX;349.9;
+34;20/05/2025;Lo Comercio De Derivados De Petroleo Ltda;PIX;100;
+35;20/05/2025;Brena Kercia Pereira Da Silva;PIX;150;
+36;20/05/2025;Antonio Alex Araujo Dino;PIX;1902;
+37;20/05/2025;Fernando Cesar Rocha Lira Junior;PIX;140.97;
+38;21/05/2025;Mercado Do Sabor;PIX;47.05;
+39;21/05/2025;Lf Felix Descartaveis;PIX;167;
+40;21/05/2025;Freitas Varejo;PIX;791.75;
+41;21/05/2025;Francisca Joice Da Silva Costa;PIX;2000;
+42;21/05/2025;Jose Ricardo Da Silva Beserra;PIX;8;
+43;21/05/2025;Comercial Dantas;PIX;166.9;
+44;22/05/2025;Erilane Ferreira De Melo;PIX;600;
+45;22/05/2025;Grafica Prints;PIX;337.6;
+46;22/05/2025;Ronaldo Pereira Da Silva;PIX;1043;
+47;22/05/2025;Rebeca Souza Cavalcante;PIX;90;
+48;23/05/2025;Pix Marketplace;PIX;473.07;
+49;25/05/2025;Soraya Siqueira Da Costa Dourado;PIX;30;Ressarcimento - Raimundo Nonato de Araújo Armarinho - Plastificação Material da Secretaria

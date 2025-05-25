@@ -279,10 +279,10 @@ def main():
     conciliador.conciliar_cartao()
 
     # imprimir_lista(conciliador.get_encontreiros_conciliados(), 'ENCONTREIRO CONCILIADOS')
-    # imprimir_lista(conciliador.get_encontreiros_nao_conciliados(), 'ENCONTREIRO NÃO CONCILIADOS')
+    imprimir_lista(conciliador.get_encontreiros_nao_conciliados(), 'ENCONTREIRO NÃO CONCILIADOS')
     
     # # imprimir_lista(conciliador.get_encontrista_conciliados(), 'ENCONTRISTA CONCILIADOS')
-    imprimir_lista(conciliador.get_encontrista_nao_conciliados(), 'ENCONTRISTA NÃO CONCILIADOS')
+    # imprimir_lista(conciliador.get_encontrista_nao_conciliados(), 'ENCONTRISTA NÃO CONCILIADOS')
     
     # # imprimir_lista(conciliador.get_cartao_conciliado(), 'CARTÃO CONCILIADOS')
     # imprimir_lista(conciliador.get_cartao_nao_conciliado(), 'CARTÃO NÃO CONCILIADOS')

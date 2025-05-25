@@ -45,7 +45,7 @@ class Conciliador:
         
         # self.dados_conciliados: list[DadoConciliado] = []
         
-        self.data_limite = "16/05/2025"
+        self.data_limite = "24/05/2025"
         
 
     def conciliar_encontreiro(self):
@@ -58,6 +58,8 @@ class Conciliador:
             if nome_pagador == 'CANCELADO':
                 self.encontreiros_nao_conciliados.remove(encontreiro)
                 continue
+            
+            
                 
             valor_pago_att = float(str(encontreiro.get("VALOR PAGO:", "")).replace(",", ".").replace('R$', '').strip())
             if valor_pago_att == 0:
@@ -71,6 +73,15 @@ class Conciliador:
             data_corte = datetime.strptime(self.data_limite, '%d/%m/%Y')
             if data_pgto > data_corte:
                 self.encontreiros_nao_conciliados.remove(encontreiro)
+                continue
+            
+            if 'serviços do encontro' in nome_pagador.lower():
+                self.encontreiros_nao_conciliados.remove(encontreiro)
+                dado_conciliado = DadoConciliado(
+                    data_pgto, encontreiro.get("NOME COMPLETO", ""), 'ENTRADA', 'SERVIÇO', 'ENCONTREIRO', valor_pago,
+                    { "observacao": observacao, "nome_pagador": nome_pagador,  "data_incricao": data_inscricao }
+                )
+                self.encontreiros_conciliados.append(dado_conciliado)
                 continue
             
             if "dinheiro" in observacao.lower():
