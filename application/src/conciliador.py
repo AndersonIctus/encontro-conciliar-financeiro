@@ -166,6 +166,19 @@ class Conciliador:
                 self.encontrista_nao_conciliado.remove(encontrista)
                 continue
             
+            if '- pagou junto -' in encontrista.observacao.lower():
+                self.encontrista_nao_conciliado.remove(encontrista)
+                continue
+            
+            if encontrista.tipo == 'FICHA SOCIAL':
+                self.encontrista_nao_conciliado.remove(encontrista)
+                dado_conciliado = DadoConciliado(
+                    encontrista.dt_lancamento + ' 00:00:00', encontrista.pagador, 'ENTRADA', 'FICHA SOCIAL', 'ENCONTRISTA', encontrista.valor,
+                    { "observacao": encontrista.observacao }
+                )
+                self.valores_em_dinheiro.append(dado_conciliado)
+                continue
+            
             if encontrista.tipo == 'DINHEIRO':
                 self.encontrista_nao_conciliado.remove(encontrista)
                 dado_conciliado = DadoConciliado(
