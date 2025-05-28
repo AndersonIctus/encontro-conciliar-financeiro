@@ -45,7 +45,7 @@ class Conciliador:
         
         # self.dados_conciliados: list[DadoConciliado] = []
         
-        self.data_limite = "24/05/2025"
+        self.data_limite = "23/05/2025"
         
 
     def conciliar_encontreiro(self):
