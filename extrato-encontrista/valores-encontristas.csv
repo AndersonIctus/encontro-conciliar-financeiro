@@ -13,7 +13,7 @@ ID;Data Lançamento;Pagador;Tipo;Valor;Observacao
 12;05/04/2025;Daniel Da Silva Oliveira;DINHEIRO;170;Encontrista: Rayane Kelly Lima da Silva
 13;05/04/2025;Daniel Da Silva Oliveira;DINHEIRO;170;Encontrista: Gabriel Leite Souza
 14;05/04/2025;Daniel Da Silva Oliveira;PIX;170;Encontrista: Mateus Leite
-15;16/04/2025;Ruth Safira Abreu Pinheiro;PIX;20;Biscoitos 
+15;16/04/2025;Ruth Safira Abreu Pinheiro;PIX;20;Encontrista: Catarine Menezes Dutra - Biscoitos (R$ 20,00) 
 15;16/04/2025;Ruth Safira Abreu Pinheiro;PIX;150;Encontrista: Catarine Menezes Dutra
 16;12/04/2025;Damilla Narla Sampaio Vieira;PIX;300;Encontrista: Kauê Marley Sampaio Furtado - Pagamento de 2 fichas em pix R$ 300,00 (Fichas 16 e 17)
 17;12/04/2025;Damilla Narla Sampaio Vieira;PIX;0;Encontrista: Davi Emanuel Araújo Barros - PAGOU JUNTO - Pagamento de 2 fichas em pix R$ 300,00 (Fichas 16 e 17)
@@ -43,41 +43,41 @@ ID;Data Lançamento;Pagador;Tipo;Valor;Observacao
 40;22/04/2025;Karen Maiara Melo Vieira;PIX;150;Encontrista: Francisco Wesley Brito da Silva
 41;29/04/2025;Antônia Lilia Carolina da Silva Fiuza;PIX;150;Encontrista: Patrícia Sobreira Do Nascimentos - Ficha foi cancelada (Valor de credito para cobrir a ficha do Ronaldo e Lilia Fiuza)
 42;09/05/2025;Waldênia Márcia da Silva Barbosa;PIX;150;Encontrista: Fábio Ueslei Silva De Maria
-43;10/05/2025;Ana Cecilia Maia Gondim Pimenta;PIX;150;Encontrista:
-44;10/05/2025;Rubervan Mesquita;CARTAO;170;Encontrista: - Pgto 2x
-45;06/05/2025;Jozileide Jorge Aquino;PIX;150;Encontrista:
-46;10/05/2025;Iliane Maria Pimenta Rodrigues;PIX;150;Encontrista:
-46;10/05/2025;Iliane Maria Pimenta Rodrigues;PIX;20;Encontrista:
-47;10/05/2025;Iliane Maria Pimenta Rodrigues;PIX;150;Encontrista:
-48;10/05/2025;FICHA SOCIAL;DINHEIRO;0;Encontrista:
-49;08/05/2025;Ana Cecilia Maia Gondim Pimenta;PIX;150;Encontrista:
-50;05/05/2025;Melissa Albuquerque;PIX;300;Encontrista: - Pagamento via pix Fichas 50 e 51
-51;05/05/2025;Melissa Albuquerque;PIX;0;Encontrista: - PAGOU JUNTO - Pagamento via pix Fichas 50 e 51
-52;02/05/2025;Aurelia Pinto De Medeiros;PIX;150;Encontrista:
-53;10/05/2025;Chica Melry;DINHEIRO;170;Encontrista:
-54;10/05/2025;Ronaldo P Da Silva;PIX;150;Encontrista:
-55;10/05/2025;Rayane da Silva;PIX;340;Encontrista: - Pagmento via pix das fichas 55 e 56
-56;10/05/2025;Rayane da Silva;PIX;0;Encontrista: - PAGOU JUNTO - Pagmento via pix das fichas 55 e 56
-57;10/05/2025;João Gabriel Viana;CARTAO;240;Encontrista: - Fichas via cartao 1 Encontreiro e 1 Encontrista
-58;10/05/2025;Amanda da Silva;PIX;170;Encontrista:
-59;10/05/2025;Vanuzia Rodrigues da Silva;PIX;170;Encontrista:
-60;09/05/2025;Alessandra Sousa Viana Barroso;PIX;170;Encontrista:
-61;10/05/2025;Larissa Oliveira Guimarães;PIX;340;Encontrista: Raiana de Holanda - Fichas via pix 2 Encontristas (61 e 62) + 40,00 em biscoito
-62;10/05/2025;Larissa Oliveira Guimarães;PIX;0;Encontrista: - PAGOU JUNTO - Fichas via pix 2 Encontristas (61 e 62) + 40,00 em biscoito
-63;10/05/2025;Rebeca Benevides;DINHEIRO;150;Encontrista:
-64;10/05/2025;Rebeca Benevides;DINHEIRO;150;Encontrista:
-65;10/05/2025;Maria Eduarda dos Santos;PIX;170;Encontrista:
-66;10/05/2025;Katila Rochelle Silva Souza;PIX;20;Encontrista: - Ficha Social + Biscoito via pix
-67;26/04/2025;Luciane Alves Nunes;PIX;150;Encontrista: - Pagamento via pix no dia 26/04 - R$ 330,00 em pix
-67;10/05/2025;Luciane Alves Nunes;PIX;20;Encontrista: - Pagamento via pix de biscoitos
-68;10/05/2025;Andressa Sousa;DINHEIRO;150;Encontrista:
-69;10/05/2025;Damilla Narla Sampaio Vieira;PIX;150;Encontrista:
-70;10/05/2025;Damilla Narla Sampaio Vieira;PIX;150;Encontrista:
-71;10/05/2025;Damilla Narla Sampaio Vieira;PIX;150;Encontrista:
-72;10/05/2025;Cristiane Cardoso;CARTAO;350;Encontrista: - Pagamento via cartão -> 2 encontreiros + 1 encontrista + biscoitos (parcelamento em 3x)
-73;10/05/2025;Iuri De Sousa Trajano;PIX;170;Encontrista:
-74;10/05/2025;Luciano Rodrigues Magalhaes;PIX;340;Encontrista: - Fichas via pix 2 Encontristas (74 e 75) + 40,00 em biscoito
-75;10/05/2025;Luciano Rodrigues Magalhaes;PIX;0;Encontrista: - PAGOU JUNTO - Fichas via pix 2 Encontristas (74 e 75) + 40,00 em biscoito
+43;10/05/2025;Ana Cecilia Maia Gondim Pimenta;PIX;150;Encontrista: Monalisa Marques de Sousa - Valor Vazio
+44;10/05/2025;Rubervan Mesquita;CARTAO;170;Encontrista: Eraldo Menezes dos Santos Filho - Pgto 2x
+45;06/05/2025;Jozileide Jorge Aquino;PIX;150;Encontrista: Thais Sousa Ribeiro
+46;10/05/2025;Iliane Maria Pimenta Rodrigues;PIX;150;Encontrista: Isabel Pimenta Rodrigues Pereira
+46;10/05/2025;Iliane Maria Pimenta Rodrigues;PIX;20;Encontrista: Isabel Pimenta Rodrigues Pereira - Biscoitos em pix
+47;10/05/2025;Iliane Maria Pimenta Rodrigues;PIX;150;Encontrista: Alicia Pimenta Rodrigues da Silva
+48;10/05/2025;FICHA SOCIAL;DINHEIRO;0;Encontrista: Renato Robert Rodrigues de Almeida
+49;08/05/2025;Ana Cecilia Maia Gondim Pimenta;PIX;150;Encontrista: Rian Tito Cavalcante de Sousa
+50;05/05/2025;Melissa Albuquerque;PIX;300;Encontrista: Ester Araujo Sanil dos Santos - Pagamento via pix Fichas 50 e 51
+51;05/05/2025;Melissa Albuquerque;PIX;0;Encontrista: Carlos Eliakim Sobrinho de Morais - PAGOU JUNTO - Pagamento via pix Fichas 50 e 51
+52;02/05/2025;Aurelia Pinto De Medeiros;PIX;150;Encontrista: Isabele Uchoa Guerra
+53;10/05/2025;Chica Melry;DINHEIRO;170;Encontrista: Sara Sampaio Lima
+54;10/05/2025;Ronaldo P Da Silva;PIX;150;Encontrista: Eduardo Levi de Castro Fernandes
+55;10/05/2025;Rayane da Silva;PIX;340;Encontrista: Livia Oliveira Salaes - Pagmento via pix das fichas 55 e 56
+56;10/05/2025;Rayane da Silva;PIX;0;Encontrista: Nicolly Evelyn da Silva Maciel - PAGOU JUNTO - Pagmento via pix das fichas 55 e 56
+57;10/05/2025;Diana Simões;CARTAO;240;Encontrista: João Gabriel Viana - Fichas via cartao 1 Encontreiro e 1 Encontrista
+58;10/05/2025;Amanda da Silva;PIX;170;Encontrista: Rafael Cristian da Silva Ribeiro
+59;10/05/2025;Vanuzia Rodrigues da Silva;PIX;170;Encontrista: Cauã Rodrigues da Silva
+60;09/05/2025;Alessandra Sousa Viana Barroso;PIX;170;Encontrista: Joõ Felipe Sousa Viana Barroso
+61;10/05/2025;Larissa Oliveira Guimarães;PIX;340;Encontrista: Raiana de Holanda Silva - Fichas via pix 2 Encontristas (61 e 62) + 40,00 em biscoito
+62;10/05/2025;Larissa Oliveira Guimarães;PIX;0;Encontrista: Maria Emílie de Freitas Lima - PAGOU JUNTO - Fichas via pix 2 Encontristas (61 e 62) + 40,00 em biscoito
+63;10/05/2025;Rebeca Benevides;DINHEIRO;150;Encontrista: Iara Barroso Flexa
+64;10/05/2025;Rebeca Benevides;DINHEIRO;150;Encontrista: Laura Thais Faustino Saraiva
+65;10/05/2025;Maria Eduarda dos Santos;PIX;170;Encontrista: Leticia de Sousa Bezerro
+66;10/05/2025;Katila Rochelle Silva Souza;PIX;20;Encontrista: Jonathan Tauã Cavalcante Feitosa - Ficha Social + Biscoito (R$ 20,00) via pix
+67;26/04/2025;Luciane Alves Nunes;PIX;150;Encontrista: Cristina Araújo de Sousa - Pagamento via pix no dia 26/04 - R$ 330,00 em pix
+67;10/05/2025;Luciane Alves Nunes;PIX;20;Encontrista: Cristina Araújo de Sousa - Pagamento via pix de biscoitos (R$ 20,00)
+68;10/05/2025;Andressa Sousa;DINHEIRO;150;Encontrista: Iure Sousa Dias
+69;10/05/2025;Damilla Narla Sampaio Vieira;PIX;150;Encontrista: Esdras Victor Costa Oliveira
+70;10/05/2025;Damilla Narla Sampaio Vieira;PIX;150;Encontrista: João Witor de Sousa Dedes
+71;10/05/2025;Damilla Narla Sampaio Vieira;PIX;150;Encontrista: Graziele Felix de Andrade
+72;10/05/2025;Cristiane Cardoso;CARTAO;350;Encontrista: Darlyne Cardoso Bezerra Medeiros - Pagamento via cartão -> 2 encontreiros + 1 encontrista + biscoitos (parcelamento em 3x)
+73;10/05/2025;Iuri De Sousa Trajano;PIX;170;Encontrista: Rebeca Barbosa de Sousa Gomes
+74;10/05/2025;Luciano Rodrigues Magalhaes;PIX;340;Encontrista: Rebeca de Sousa Oliveira - Fichas via pix 2 Encontristas (74 e 75) + 40,00 em biscoito
+75;10/05/2025;Luciano Rodrigues Magalhaes;PIX;0;Encontrista: Pedro Vinicius Bernardo Castelo - PAGOU JUNTO - Fichas via pix 2 Encontristas (74 e 75) + 40,00 em biscoito
 76;17/05/2025;Damilla Narla Sampaio Vieira;PIX;150;Encontrista: Jheniffer Estela Rodrigues do Nascimento
 77;17/05/2025;Matheus Pereira Lima;PIX;170;Encontrista: Juliana da Silva Moura
 78;17/05/2025;Livia Lira Chaves;PIX;300;Encontrista: Levi Lira Amorim - Fichas via pix 2 Encontrista (78 e 79) - Valor de R$ 300,00 
@@ -102,7 +102,7 @@ ID;Data Lançamento;Pagador;Tipo;Valor;Observacao
 97;15/05/2025;Jonatas Vasconcelos;PIX;170;Encontrista: Gabriel Ferreira Vasconcelos
 98;15/05/2025;Pobris;PIX;170;Encontrista: Amanda Borre Jungles
 99;15/05/2025;Magda Araujo Lima de Almeida;PIX;170;Encontrista: Mikaelly Lima de Almeida
-100;17/05/2025;Daniele Avores Subrinha;PIX;170;Encontrista: Pedro Lucas Avores de Almeida
+100;16/05/2025;Daniele Avores Subrinha;PIX;170;Encontrista: Pedro Lucas Avores de Almeida - valor vazio
 101;17/05/2025;Igreja Cristã Despertar;PIX;170;Encontrista: Eduardo Omar Dantas Borges
 102;17/05/2025;Lucas Rafael;CARTAO;170;Encontrista: Isadora Cleide Araújo Lino
 103;18/05/2025;Yasmin Maria Santos Vidal;PIX;170;Encontrista: Thiago de Oliveira Silva
@@ -110,3 +110,11 @@ ID;Data Lançamento;Pagador;Tipo;Valor;Observacao
 105;15/05/2025;Letícia Beatriz Arruda Gomes;PIX;170;Encontrista: Laiane de Menezes Goes
 106;24/05/2025;Jair de Azevedo Moreira Filho;PIX;150;Encontrista: Susana Neves de Lima Costa
 107;15/05/2025;Amanda Kelly De Moura San;PIX;170;Encontrista: Natália Soares de Sousa
+108;19/05/2025;Fabio Luiz Braga Ferreira Junior;PIX;170;Encontrista: Luana Alves Carvalho da Costa - 
+109;21/05/2025;Régia Brandão;PIX;170;Encontrista: Rárica Chaves Fernandes Monteiro -
+110;21/05/2025;Ronaldo P Da Silva;PIX;150;Encontrista: Stephany Bianca Amaro da Silva - Verificar Situação (FICHA + BISCOITO)
+111;21/05/2025;Bianca Rossane;PIX;20;Encontrista: Emily Narlitl Feitosa de Sousa - Ficha Social + R$ 20,00 de biscoitos via pix 
+112;17/05/2025;Elisangela Sousa;PIX;170;Encontrista: Jamily de Souza Santos -
+113;24/05/2025;Ana Vitoria Amorim;PIX;170;Encontrista: Maria Viviane Memoria de Sousa - 
+114;28/05/2025;Barbara Fiuza;FICHA SOCIAL;0;Encontrista: Patrícia Sobreira do Nascimento - Ficha Social (6pcts Biscoito)
+115;30/05/2025;Maria Lucicleide Magalhães;PIX;170;Encontrista: Clara Beatriz Cavalcante Magalhães - 

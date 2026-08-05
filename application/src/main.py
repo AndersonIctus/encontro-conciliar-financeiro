@@ -285,7 +285,7 @@ def main():
     # imprimir_lista(conciliador.get_encontrista_nao_conciliados(), 'ENCONTRISTA NÃO CONCILIADOS')
     
     # # imprimir_lista(conciliador.get_cartao_conciliado(), 'CARTÃO CONCILIADOS')
-    # imprimir_lista(conciliador.get_cartao_nao_conciliado(), 'CARTÃO NÃO CONCILIADOS')
+    imprimir_lista(conciliador.get_cartao_nao_conciliado(), 'CARTÃO NÃO CONCILIADOS')
 
     # # imprimir_lista(conciliador.get_despesas_conciliados(), 'DESPESAS CONCILIADAS')
     # imprimir_lista(conciliador.get_despesas_nao_conciliados(), 'DESPESAS NÃO CONCILIADAS')
@@ -294,7 +294,7 @@ def main():
     # imprimir_lista(conciliador.get_outros_nao_conciliados(), 'OUTROS NÃO CONCILIADAS')
     
     # # imprimir_lista(conciliador.get_extratos_conciliados(), 'EXTRATO CONCILIADOS')
-    imprimir_lista(conciliador.get_extratos_nao_conciliados(), 'EXTRATO NÃO CONCILIADOS')
+    # imprimir_lista(conciliador.get_extratos_nao_conciliados(), 'EXTRATO NÃO CONCILIADOS')
     
     # # imprimir_lista(conciliador.get_cartao_extrato_conciliado(), 'CARTAO EXTRATO CONCILIADOS')
     # imprimir_lista(conciliador.get_cartao_extrato_nao_conciliado(), 'CARTAO EXTRATO NÃO CONCILIADOS')

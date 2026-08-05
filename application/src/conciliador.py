@@ -45,7 +45,7 @@ class Conciliador:
         
         # self.dados_conciliados: list[DadoConciliado] = []
         
-        self.data_limite = "23/05/2025"
+        self.data_limite = "10/06/2025"
         
 
     def conciliar_encontreiro(self):
@@ -58,8 +58,6 @@ class Conciliador:
             if nome_pagador == 'CANCELADO':
                 self.encontreiros_nao_conciliados.remove(encontreiro)
                 continue
-            
-            
                 
             valor_pago_att = float(str(encontreiro.get("VALOR PAGO:", "")).replace(",", ".").replace('R$', '').strip())
             if valor_pago_att == 0:
@@ -79,6 +77,15 @@ class Conciliador:
                 self.encontreiros_nao_conciliados.remove(encontreiro)
                 dado_conciliado = DadoConciliado(
                     data_pgto, encontreiro.get("NOME COMPLETO", ""), 'ENTRADA', 'SERVIÇO', 'ENCONTREIRO', valor_pago,
+                    { "observacao": observacao, "nome_pagador": nome_pagador,  "data_incricao": data_inscricao }
+                )
+                self.encontreiros_conciliados.append(dado_conciliado)
+                continue
+            
+            if 'ficha social' in nome_pagador.lower():
+                self.encontreiros_nao_conciliados.remove(encontreiro)
+                dado_conciliado = DadoConciliado(
+                    data_pgto, encontreiro.get("NOME COMPLETO", ""), 'ENTRADA', 'FICHA SOCIAL', 'ENCONTREIRO', valor_pago,
                     { "observacao": observacao, "nome_pagador": nome_pagador,  "data_incricao": data_inscricao }
                 )
                 self.encontreiros_conciliados.append(dado_conciliado)
@@ -208,7 +215,8 @@ class Conciliador:
                 if data_pgto.year != data_extrato.year or data_pgto.month != data_extrato.month or data_pgto.day != data_extrato.day:
                     continue
                 
-                if self._nomes_sao_similares(extrato.nome, encontrista.pagador) and (extrato.valor == encontrista.valor or extrato.valor_a_conciliar == encontrista.valor):
+                mesmo_nome = self._nomes_sao_similares(extrato.nome, encontrista.pagador) or 'valor vazio' in encontrista.observacao.lower()
+                if mesmo_nome and (extrato.valor == encontrista.valor or extrato.valor_a_conciliar == encontrista.valor):
                     extrato.valor_a_conciliar = extrato.valor_a_conciliar - encontrista.valor
                     
                     dado_conciliado = DadoConciliado(
